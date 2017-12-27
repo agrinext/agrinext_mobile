@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">AgriNext</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="support_email">foundation@erpnext.org</string>
+    <string name="menuMarket">Market</string>
+    <string name="menuSellers">Sellers</string>
+    <string name="menuChats">Chats</string>
+    <string name="menuMyProfile">My Profile</string>
+    <string name="menuMyProduce">My Produce</string>
+    <string name="menuInvite">Invite</string>
+    <string name="menuLocations">Locations</string>
+    <string name="menuItem">Items</string>
+    <string name="menuGroupAdmin">Admin</string>
+</resources>

@@ -11,16 +11,47 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:layout_weight="1.5"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/profileImage"
+            android:id="@+id/ivProfileImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@mipmap/ic_launcher_round"/>
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+            app:srcCompat="@mipmap/ic_launcher_round" />
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvFullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Revant"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorAccent" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
 </LinearLayout>

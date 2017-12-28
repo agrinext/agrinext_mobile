@@ -20,9 +20,7 @@
             android:id="@+id/ivProfileImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:adjustViewBounds="false"
-            android:cropToPadding="false"
-            app:srcCompat="@mipmap/ic_launcher_round" />
+            android:src="@mipmap/ic_launcher"/>
 
     </RelativeLayout>
 

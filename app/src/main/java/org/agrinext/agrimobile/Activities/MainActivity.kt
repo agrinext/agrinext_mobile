@@ -1,4 +1,4 @@
-package org.agrinext.agrimobile
+package org.agrinext.agrimobile.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import org.agrinext.agrimobile.R
 import org.jetbrains.anko.share
 import org.jetbrains.anko.toast
 
@@ -20,11 +21,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -77,10 +73,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 toast("My Produce Clicked")
             }
             R.id.nav_invite -> {
-                toast("Invite Clicked")
+                share("https://agrinext.org")
             }
             R.id.nav_locations -> {
-                share("https://agrinext.org")
+                toast("Locations Clicked")
             }
             R.id.nav_items -> {
                 toast("Items Clicked")

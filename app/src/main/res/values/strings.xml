@@ -15,4 +15,6 @@
     <string name="menuLocations">Locations</string>
     <string name="menuItem">Items</string>
     <string name="menuGroupAdmin">Admin</string>
+    <string name="textList">List</string>
+    <string name="textFilters">Filters</string>
 </resources>

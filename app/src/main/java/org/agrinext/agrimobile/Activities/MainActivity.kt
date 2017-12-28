@@ -58,10 +58,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_market -> {
-                toast("Market Clicked")
+                startActivity(Intent(this, ListingActivity::class.java))
             }
             R.id.nav_sellers -> {
-                toast("Sellers Clicked")
+                startActivity(Intent(this, ListingActivity::class.java))
             }
             R.id.nav_chats -> {
                 toast("Chats Clicked")
@@ -70,16 +70,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(Intent(this, UserProfile::class.java))
             }
             R.id.nav_my_produce -> {
-                toast("My Produce Clicked")
+                startActivity(Intent(this, ListingActivity::class.java))
             }
             R.id.nav_invite -> {
                 share("https://agrinext.org")
             }
             R.id.nav_locations -> {
-                toast("Locations Clicked")
+                startActivity(Intent(this, ListingActivity::class.java))
             }
             R.id.nav_items -> {
-                toast("Items Clicked")
+                startActivity(Intent(this, ListingActivity::class.java))
             }
         }
 

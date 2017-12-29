@@ -19,9 +19,9 @@ class ListViewAdapter(val doc_list:JSONArray): RecyclerView.Adapter<ListViewAdap
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Get list_item (and other fields) from ListItemUI
         val name: TextView = itemView.find(R.id.list_item)
-
         // Bind values to name and other fields above
         fun bind(jsonObject: JSONObject?) {
+            print(itemView.toString())
             name.text = jsonObject?.getString("name")
         }
     }

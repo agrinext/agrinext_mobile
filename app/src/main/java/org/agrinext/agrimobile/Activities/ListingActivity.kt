@@ -15,7 +15,7 @@ class ListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listing)
 
-        val mRecyclerView = findViewById(R.id.recycler_view) as RecyclerView
+        val mRecyclerView: RecyclerView = findViewById(R.id.recycler_view)
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -27,9 +27,11 @@ class ListingActivity : AppCompatActivity() {
 
         // JSON Array from frappe's listing
         var jsonArray = JSONArray()
-        val jsonObject = JSONObject()
-        jsonObject.put("name","List Item")
-        jsonArray.put(jsonObject)
+        for (i in 0..100) {
+            val jsonObject = JSONObject()
+            jsonObject.put("name","List Item " + i.toString())
+            jsonArray.put(jsonObject)
+        }
 
         // specify an adapter
         val mAdapter = ListViewAdapter(jsonArray);

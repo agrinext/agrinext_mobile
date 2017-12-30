@@ -17,4 +17,24 @@
     <string name="menuGroupAdmin">Admin</string>
     <string name="textList">List</string>
     <string name="textFilters">Filters</string>
+    <string name="tapToSignIn">Tap to Sign In</string>
+    <string name="welcome">Welcome</string>
+    <string name="please_add_account">Please add account</string>
+
+    <!-- OAUTH -->
+    <string name="allowMultipleAccounts">0</string>
+    <string name="authEndpoint">/api/method/frappe.integrations.oauth2.authorize</string>
+    <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
+    <string name="clientId">6663db6e09</string>
+    <string name="clientSecret">nosecret</string>
+    <string name="expiresIn">3300</string>
+    <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
+    <string name="oauth2Scope">openid all</string>
+    <string name="openIDEndpoint">/api/method/frappe.integrations.oauth2.openid_profile</string>
+    <string name="otpLen">6</string>
+    <string name="otpSenderNumber">MNTECH</string>
+    <string name="package_name">org.agrinext.agrimobile</string>
+    <string name="redirectURI">oauth://oauth2authenticator</string>
+    <string name="serverURL">http://192.168.1.123:8000</string>
+    <string name="tokenEndpoint">/api/method/frappe.integrations.oauth2.get_token</string>
 </resources>

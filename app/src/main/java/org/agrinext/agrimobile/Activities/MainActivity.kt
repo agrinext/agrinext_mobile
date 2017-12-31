@@ -20,6 +20,8 @@ import com.github.scribejava.core.model.Verb
 import com.mntechnique.otpmobileauth.auth.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import org.agrinext.agrimobile.Android.ApplicationController
+import org.agrinext.agrimobile.Android.ConnectivityReceiver
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -28,13 +30,15 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener{
     internal lateinit var mAccountManager: AccountManager
+
     internal lateinit var accounts: Array <Account>
     internal lateinit var accessTokenCallback: AuthReqCallback
     internal lateinit var authRequest: AuthRequest
     val ACCOUNT_TYPE = "ACCOUNT_TYPE"
     val TAG = "AgriNext"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -85,6 +89,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fireUp()
     }
 
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        Log.d("NetStat", isConnected.toString())
+        // fireUp()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         if (data != null){
             if (requestCode == 1 && resultCode == Activity.RESULT_OK){
@@ -106,7 +115,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun fireUp(){
+    fun fireUp() {
         val desktop_text = findViewById<TextView>(R.id.desktop_text)
         val linearLayoutDesktop = findViewById<LinearLayout>(R.id.linearLayoutDesktop)
         accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
@@ -119,11 +128,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             toggle.syncState()
 
             nav_view.setNavigationItemSelectedListener(this)
-
             desktop_text.setText(R.string.welcome)
-            linearLayoutDesktop.onClick { }
-            val ratt = RetrieveAuthTokenTask(applicationContext, accessTokenCallback)
-            ratt.execute()
+            linearLayoutDesktop.onClick {
+                val ratt = RetrieveAuthTokenTask(applicationContext, accessTokenCallback)
+                ratt.execute()
+            }
         } else {
             desktop_text.setText(R.string.tapToSignIn)
             linearLayoutDesktop.onClick {
@@ -132,6 +141,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 )
             }
         }
+
+        /*
+        if (!checkNetworkConnection(this)) {
+            desktop_text.setText(R.string.tapToRefresh)
+            linearLayoutDesktop.onClick {
+                fireUp()
+            }
+        }
+        */
     }
 
     override fun onRestart() {
@@ -141,7 +159,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
+        ApplicationController.instance?.setConnectivityListener(this);
+        ApplicationController.instance?.activityResumed()
         fireUp()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ApplicationController.instance?.activityPaused()
     }
 
     override fun onBackPressed() {
@@ -184,7 +209,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(Intent(this, UserProfile::class.java))
             }
             R.id.nav_my_produce -> {
-                startActivity(Intent(this, ListingActivity::class.java))
+                startActivity(Intent(this, ProduceActivity::class.java))
             }
             R.id.nav_invite -> {
                 share("https://agrinext.org")

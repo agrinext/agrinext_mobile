@@ -4,6 +4,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -23,7 +25,9 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.agrinext.agrimobile.Android.ApplicationController
 import org.agrinext.agrimobile.Android.ConnectivityReceiver
 import org.agrinext.agrimobile.BuildConfig
+import org.agrinext.agrimobile.Helpers.checkNetworkConnection
 import org.agrinext.agrimobile.R
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
@@ -42,6 +46,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        baseContext.registerReceiver(ConnectivityReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        ApplicationController.instance?.setConnectivityListener(this)
 
         mAccountManager = AccountManager.get(this)
 
@@ -91,7 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         Log.d("NetStat", isConnected.toString())
-        // fireUp()
+        fireUp()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -118,6 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun fireUp() {
         val desktop_text = findViewById<TextView>(R.id.desktop_text)
         val linearLayoutDesktop = findViewById<LinearLayout>(R.id.linearLayoutDesktop)
+
         accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
         if (accounts.size == 1) {
             setSupportActionBar(toolbar)
@@ -142,14 +149,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        /*
         if (!checkNetworkConnection(this)) {
-            desktop_text.setText(R.string.tapToRefresh)
-            linearLayoutDesktop.onClick {
-                fireUp()
-            }
+            alert("Click Ok when enabled") {
+                title = "Please Enable Network Connection!"
+                positiveButton("Ok"){
+                    fireUp()
+                }
+            }.show().setCancelable(false)
         }
-        */
+//        if (!checkNetworkConnection(this)) {
+//            desktop_text.setText(R.string.tapToRefresh)
+//            linearLayoutDesktop.onClick {
+//                fireUp()
+//            }
+//        }
+
     }
 
     override fun onRestart() {

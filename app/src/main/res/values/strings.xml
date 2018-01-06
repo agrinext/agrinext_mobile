@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">AgriNext</string>
 
+    <!-- Translateable Strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="action_settings">Settings</string>
     <string name="support_email">foundation@erpnext.org</string>
     <string name="menuMarket">Market</string>
@@ -20,6 +20,8 @@
     <string name="tapToSignIn">Tap to Sign In</string>
     <string name="welcome">Welcome</string>
     <string name="please_add_account">Please add account</string>
+    <string name="tapToRefresh">Tap to Refresh</string>
+    <string name="somethingWrong">Something went wrong</string>
 
     <!-- OAUTH -->
     <string name="allowMultipleAccounts">0</string>
@@ -37,5 +39,5 @@
     <string name="package_name">org.agrinext.agrimobile</string>
     <string name="serverURL">http://192.168.0.108:8000</string>
     <string name="tokenEndpoint">/api/method/frappe.integrations.oauth2.get_token</string>
-    <string name="tapToRefresh">Tap to Refresh</string>
+
 </resources>

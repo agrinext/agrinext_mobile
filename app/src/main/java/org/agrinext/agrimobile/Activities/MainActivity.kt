@@ -4,99 +4,35 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import com.github.scribejava.core.model.OAuthRequest
-import com.github.scribejava.core.model.Verb
-import com.mntechnique.otpmobileauth.auth.*
+import com.mntechnique.otpmobileauth.auth.AuthenticatorActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import org.agrinext.agrimobile.Android.ApplicationController
-import org.agrinext.agrimobile.Android.ConnectivityReceiver
+import org.agrinext.agrimobile.Android.BaseCompactActivity
 import org.agrinext.agrimobile.BuildConfig
-import org.agrinext.agrimobile.Helpers.checkNetworkConnection
 import org.agrinext.agrimobile.R
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
-import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener{
+class MainActivity : BaseCompactActivity(), NavigationView.OnNavigationItemSelectedListener {
     internal lateinit var mAccountManager: AccountManager
-
     internal lateinit var accounts: Array <Account>
-    internal lateinit var accessTokenCallback: AuthReqCallback
-    internal lateinit var authRequest: AuthRequest
     val ACCOUNT_TYPE = "ACCOUNT_TYPE"
     val TAG = "AgriNext"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        baseContext.registerReceiver(ConnectivityReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        ApplicationController.instance?.setConnectivityListener(this)
-
-        mAccountManager = AccountManager.get(this)
-
-        val oauth2Scope = resources.getString(org.agrinext.agrimobile.R.string.oauth2Scope)
-        val clientId = resources.getString(org.agrinext.agrimobile.R.string.clientId)
-        val clientSecret = resources.getString(org.agrinext.agrimobile.R.string.clientSecret)
-        val serverURL = resources.getString(org.agrinext.agrimobile.R.string.serverURL)
-        val redirectURI = resources.getString(org.agrinext.agrimobile.R.string.redirectURI)
-        val authEndpoint = resources.getString(org.agrinext.agrimobile.R.string.authEndpoint)
-        val tokenEndpoint = resources.getString(org.agrinext.agrimobile.R.string.tokenEndpoint)
-        val openIDEndpoint = resources.getString(org.agrinext.agrimobile.R.string.openIDEndpoint)
-
-        authRequest = AuthRequest(
-                applicationContext,
-                oauth2Scope, clientId, clientSecret, serverURL,
-                redirectURI, authEndpoint, tokenEndpoint)
-
-        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
-
-        val request = OAuthRequest(Verb.GET, serverURL + openIDEndpoint)
-        val responseCallback = object : AuthReqCallback {
-            override fun onSuccessResponse(s: String) {
-                val response = JSONObject(s)
-                Log.d(TAG,"OPENID FOUND")
-                Log.d(TAG,response.toString())
-            }
-
-            override fun onErrorResponse(s: String) {
-                Toast.makeText(applicationContext,"Error parsing response", Toast.LENGTH_LONG).show()
-            }
-        }
-
-        accessTokenCallback = object : AuthReqCallback {
-            override fun onSuccessResponse(s: String) {
-                Log.d("CallbackSuccess", s)
-                var bearerToken = JSONObject(s)
-                if (bearerToken.length() > 0) {
-                    authRequest.makeRequest(bearerToken.getString("access_token"), request, responseCallback)
-                }
-            }
-            override fun onErrorResponse(s: String) {
-                Log.d("CallbackError", s)
-            }
-        }
-        fireUp()
-    }
-
-    override fun onNetworkConnectionChanged(isConnected: Boolean) {
-        Log.d("NetStat", isConnected.toString())
         fireUp()
     }
 
@@ -106,8 +42,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (!data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME).isNullOrEmpty()){
                     for(a in accounts){
                         if(a.name.equals(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))){
-                            val ratt = RetrieveAuthTokenTask(applicationContext, accessTokenCallback)
-                            ratt.execute()
+                            Log.d(TAG, a.name)
                         }
                     }
                 } else {
@@ -115,55 +50,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         } else if (data === null) {
-            Toast.makeText(applicationContext,"Account Error", Toast.LENGTH_LONG).show()
+            toast(R.string.somethingWrong)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
-    }
-
-    fun fireUp() {
-        val desktop_text = findViewById<TextView>(R.id.desktop_text)
-        val linearLayoutDesktop = findViewById<LinearLayout>(R.id.linearLayoutDesktop)
-
-        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
-        if (accounts.size == 1) {
-            setSupportActionBar(toolbar)
-
-            val toggle = ActionBarDrawerToggle(
-                    this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-            drawer_layout.addDrawerListener(toggle)
-            toggle.syncState()
-
-            nav_view.setNavigationItemSelectedListener(this)
-            desktop_text.setText(R.string.welcome)
-            linearLayoutDesktop.onClick {
-                val ratt = RetrieveAuthTokenTask(applicationContext, accessTokenCallback)
-                ratt.execute()
-            }
-        } else {
-            desktop_text.setText(R.string.tapToSignIn)
-            linearLayoutDesktop.onClick {
-                startActivity<AuthenticatorActivity>(
-                        ACCOUNT_TYPE to BuildConfig.APPLICATION_ID
-                )
-            }
-        }
-
-        if (!checkNetworkConnection(this)) {
-            alert("Click Ok when enabled") {
-                title = "Please Enable Network Connection!"
-                positiveButton("Ok"){
-                    fireUp()
-                }
-            }.show().setCancelable(false)
-        }
-//        if (!checkNetworkConnection(this)) {
-//            desktop_text.setText(R.string.tapToRefresh)
-//            linearLayoutDesktop.onClick {
-//                fireUp()
-//            }
-//        }
-
     }
 
     override fun onRestart() {
@@ -173,14 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        ApplicationController.instance?.setConnectivityListener(this);
-        ApplicationController.instance?.activityResumed()
         fireUp()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        ApplicationController.instance?.activityPaused()
     }
 
     override fun onBackPressed() {
@@ -193,8 +76,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+        // menuInflater.inflate(R.menu.main, menu)
+        return false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -216,9 +99,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_sellers -> {
                 startActivity(Intent(this, ListingActivity::class.java))
             }
-            R.id.nav_chats -> {
-                toast("Chats Clicked")
-            }
             R.id.nav_my_profile -> {
                 startActivity(Intent(this, UserProfile::class.java))
             }
@@ -238,5 +118,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun fireUp() {
+        mAccountManager = AccountManager.get(this)
+        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
+
+        val desktop_text = findViewById<TextView>(R.id.desktop_text)
+        val linearLayoutDesktop = findViewById<LinearLayout>(R.id.linearLayoutDesktop)
+
+        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
+        if (accounts.size == 1) {
+            setSupportActionBar(toolbar)
+
+            val toggle = ActionBarDrawerToggle(
+                    this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+            drawer_layout.addDrawerListener(toggle)
+            toggle.syncState()
+
+            nav_view.setNavigationItemSelectedListener(this)
+            desktop_text.setText(R.string.welcome)
+        } else {
+            desktop_text.setText(R.string.tapToSignIn)
+            linearLayoutDesktop.onClick {
+                startActivity<AuthenticatorActivity>(
+                        ACCOUNT_TYPE to BuildConfig.APPLICATION_ID
+                )
+            }
+        }
     }
 }

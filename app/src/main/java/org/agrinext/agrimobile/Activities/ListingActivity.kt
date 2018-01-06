@@ -1,16 +1,15 @@
 package org.agrinext.agrimobile.Activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import org.agrinext.agrimobile.Android.BaseCompactActivity
 import org.agrinext.agrimobile.Helpers.ListViewAdapter
 import org.agrinext.agrimobile.R
 import org.json.JSONArray
 import org.json.JSONObject
 
-class ListingActivity : AppCompatActivity() {
-    internal lateinit var doc_list: JSONArray
+class ListingActivity : BaseCompactActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listing)

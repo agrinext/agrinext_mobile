@@ -8,7 +8,6 @@
     <string name="support_email">foundation@erpnext.org</string>
     <string name="menuMarket">Market</string>
     <string name="menuSellers">Sellers</string>
-    <string name="menuChats">Chats</string>
     <string name="menuMyProfile">My Profile</string>
     <string name="menuMyProduce">My Produce</string>
     <string name="menuInvite">Invite</string>
@@ -22,6 +21,9 @@
     <string name="please_add_account">Please add account</string>
     <string name="tapToRefresh">Tap to Refresh</string>
     <string name="somethingWrong">Something went wrong</string>
+    <string name="click_ok_when_enabled">Click Ok when enabled</string>
+    <string name="ok">Ok</string>
+    <string name="please_enable_net_connection">Please Enable Network Connection!</string>
 
     <!-- OAUTH -->
     <string name="allowMultipleAccounts">0</string>

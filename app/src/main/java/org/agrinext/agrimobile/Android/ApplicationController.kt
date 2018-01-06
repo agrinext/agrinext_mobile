@@ -55,6 +55,7 @@ class ApplicationController : Application() {
         stack = HurlStack()
         return BasicNetwork(stack)
     }
+
     fun setConnectivityListener(listener: ConnectivityReceiver.ConnectivityReceiverListener) {
         ConnectivityReceiver.connectivityReceiverListener = listener
     }

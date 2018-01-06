@@ -16,7 +16,7 @@ import android.widget.TextView
 import com.mntechnique.otpmobileauth.auth.AuthenticatorActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import org.agrinext.agrimobile.Android.BaseCompactActivity
+import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -24,7 +24,7 @@ import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
-class MainActivity : BaseCompactActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     internal lateinit var mAccountManager: AccountManager
     internal lateinit var accounts: Array <Account>
     val ACCOUNT_TYPE = "ACCOUNT_TYPE"

@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import com.mntechnique.otpmobileauth.auth.RetrieveAuthTokenTask
-import org.agrinext.agrimobile.Android.BaseCompactActivity
+import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.Android.EndlessRecyclerViewScrollListener
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.Helpers.FrappeClient
@@ -16,7 +16,7 @@ import org.jetbrains.anko.toast
 import org.json.JSONArray
 import org.json.JSONObject
 
-class ProduceActivity : BaseCompactActivity() {
+class ProduceActivity : BaseCompatActivity() {
     var recyclerAdapter: ListViewAdapter? = null
     var recyclerModels = JSONArray()
     internal lateinit var mRecyclerView: RecyclerView

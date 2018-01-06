@@ -13,7 +13,7 @@ import org.jetbrains.anko.alert
  * Created by revant on 6/1/18.
  */
 
-open class BaseCompactActivity : AppCompatActivity(), ConnectivityReceiver.ConnectivityReceiverListener {
+open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.ConnectivityReceiverListener {
     val connectivityReceiver = ConnectivityReceiver()
 
     override fun onNetworkConnectionChanged(isConnected: Boolean) {

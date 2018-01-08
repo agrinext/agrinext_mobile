@@ -33,7 +33,7 @@ class ListingActivity : BaseCompatActivity() {
         }
 
         // specify an adapter
-        val mAdapter = ListViewAdapter(jsonArray);
-        mRecyclerView.setAdapter(mAdapter);
+        // val mAdapter = ListViewAdapter(jsonArray);
+        // mRecyclerView.setAdapter(mAdapter);
     }
 }

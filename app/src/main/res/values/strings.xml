@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">AgriNext</string>
 
+    <!--AuthenticatorActivity-->
+    <string name="please_add_account">Please add account</string>
+    <string name="please_check_mobile">Something went wrong, please check mobile number</string>
+    <string name="add_account_not_allowed">Not allowed to add new account</string>
+    <string name="check_number_or_otp">Please check OTP or tap back to try with different number</string>
+    <string name="close">Close</string>
+    <string name="connection_error">Connection Error</string>
+
     <!-- Translateable Strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -18,7 +26,6 @@
     <string name="textFilters">Filters</string>
     <string name="tapToSignIn">Tap to Sign In</string>
     <string name="welcome">Welcome</string>
-    <string name="please_add_account">Please add account</string>
     <string name="tapToRefresh">Tap to Refresh</string>
     <string name="somethingWrong">Something went wrong</string>
     <string name="click_ok_when_enabled">Click Ok when enabled</string>
@@ -26,20 +33,12 @@
     <string name="please_enable_net_connection">Please Enable Network Connection!</string>
 
     <!-- OAUTH -->
-    <string name="allowMultipleAccounts">0</string>
-    <string name="authEndpoint">/api/method/frappe.integrations.oauth2.authorize</string>
-    <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
-    <string name="clientId">6663db6e09</string>
-    <string name="redirectURI">oauth://oauth2authenticator</string>
-    <string name="clientSecret">nosecret</string>
-    <string name="expiresIn">3300</string>
-    <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
-    <string name="oauth2Scope">openid all</string>
-    <string name="openIDEndpoint">/api/method/frappe.integrations.oauth2.openid_profile</string>
-    <string name="otpLen">6</string>
-    <string name="otpSenderNumber">MNTECH</string>
     <string name="package_name">org.agrinext.agrimobile</string>
-    <string name="serverURL">http://192.168.0.108:8000</string>
-    <string name="tokenEndpoint">/api/method/frappe.integrations.oauth2.get_token</string>
-
+    <string name="serverURL">http://192.168.1.123:8000</string>
+    <string name="clientId">6663db6e09</string>
+    <string name="allowMultipleAccounts">0</string>
+    <string name="otpSenderNumber">88793</string>
+    <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
+    <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
+    <string name="action_search">Search</string>
 </resources>

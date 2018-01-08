@@ -41,4 +41,5 @@
     <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
     <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
     <string name="action_search">Search</string>
+    <string name="acra_toast_text">Error Reported</string>
 </resources>

@@ -23,6 +23,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.share
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+import org.json.JSONException
 
 class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     internal lateinit var mAccountManager: AccountManager
@@ -33,6 +34,7 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         fireUp()
     }
 
@@ -140,6 +142,11 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
             desktop_text.setText(R.string.welcome)
             linearLayoutDesktop.onClick {
                 toast(accounts[0].name)
+                try {
+                    throw JSONException("JSONError")
+                } catch (e: JSONException) {
+                    throw RuntimeException(e)
+                }
             }
         } else {
             desktop_text.setText(R.string.tapToSignIn)

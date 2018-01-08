@@ -9,10 +9,18 @@ import com.android.volley.toolbox.DiskBasedCache
 import com.android.volley.toolbox.BasicNetwork
 import com.android.volley.toolbox.HurlStack
 import com.android.volley.toolbox.HttpStack
+import org.agrinext.agrimobile.BuildConfig
+import org.acra.*
+import org.acra.annotation.*
+import org.acra.config.*
+import org.acra.data.StringFormat
+import org.acra.sender.HttpSender
 
 /**
  * Created by revant on 31/12/17.
  */
+
+@AcraCore(buildConfigClass = BuildConfig::class)
 class ApplicationController : Application() {
     internal var activityVisible = false
     lateinit var mRequestQueue: RequestQueue
@@ -23,6 +31,21 @@ class ApplicationController : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        val serverUrl = applicationContext.resources.getString(org.agrinext.agrimobile.R.string.serverURL)
+        var headers = HashMap<String,String>()
+        headers.put("X-API-KEY", "420")
+        val builder = CoreConfigurationBuilder(this)
+        builder.setBuildConfigClass(BuildConfig::class.java).setReportFormat(StringFormat.JSON)
+        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder::class.java)
+                .setHttpHeaders(headers as Map<String, String>)
+                .setUri("$serverUrl/api/method/agrinext.api.report_error")
+                .setHttpMethod(HttpSender.Method.POST)
+                .setEnabled(true)
+        ACRA.init(this, builder)
     }
 
     fun getRequestQueue(): RequestQueue {

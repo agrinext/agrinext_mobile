@@ -35,7 +35,7 @@ class ApplicationController : Application() {
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
-        val serverUrl = applicationContext.resources.getString(org.agrinext.agrimobile.R.string.serverURL)
+        val serverUrl = baseContext.getString(org.agrinext.agrimobile.R.string.serverURL)
         var headers = HashMap<String,String>()
         headers.put("X-API-KEY", "420")
         val builder = CoreConfigurationBuilder(this)

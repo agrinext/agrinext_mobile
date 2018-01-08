@@ -1,4 +1,4 @@
-package org.agrinext.agrimobile.Helpers
+package org.agrinext.agrimobile.Android
 
 import android.annotation.TargetApi
 import android.os.Build

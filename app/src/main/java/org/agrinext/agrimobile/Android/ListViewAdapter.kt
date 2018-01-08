@@ -1,4 +1,4 @@
-package org.agrinext.agrimobile.Helpers
+package org.agrinext.agrimobile.Android
 
 import android.support.v7.widget.RecyclerView
 import android.view.View

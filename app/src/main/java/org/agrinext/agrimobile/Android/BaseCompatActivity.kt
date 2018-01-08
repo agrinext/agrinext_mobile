@@ -2,10 +2,10 @@ package org.agrinext.agrimobile.Android
 
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import org.agrinext.agrimobile.Helpers.checkNetworkConnection
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.alert
 
@@ -15,20 +15,36 @@ import org.jetbrains.anko.alert
 
 open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.ConnectivityReceiverListener {
     val connectivityReceiver = ConnectivityReceiver()
-
+    val frappeClient = FrappeClient(this)
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         checkNetworkState()
     }
 
     private fun checkNetworkState() {
-        if (!checkNetworkConnection(this)) {
-            alert(getString(R.string.click_ok_when_enabled)) {
-                title = getString(R.string.please_enable_net_connection)
-                positiveButton(getString(R.string.ok)){
-                    checkNetworkState()
+        if (!frappeClient.checkNetworkConnection()) {
+            showAlert()
+        } else if (frappeClient.checkNetworkConnection()){
+            val asyncTask = object : AsyncTask<Void, Void, Boolean>() {
+                override fun doInBackground(vararg params: Void?): Boolean{
+                    return frappeClient.checkConnection()
                 }
-            }.show().setCancelable(false)
+                override fun onPostExecute(result: Boolean) {
+                    if (!result){
+                        showAlert()
+                    }
+                }
+            }
+            asyncTask.execute()
         }
+    }
+
+    private fun showAlert() {
+        alert(getString(R.string.click_ok_when_enabled)) {
+            title = getString(R.string.please_enable_net_connection)
+            positiveButton(getString(R.string.ok)){
+                checkNetworkState()
+            }
+        }.show().setCancelable(false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {

@@ -9,8 +9,8 @@ import com.mntechnique.otpmobileauth.auth.RetrieveAuthTokenTask
 import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.Android.EndlessRecyclerViewScrollListener
 import org.agrinext.agrimobile.BuildConfig
-import org.agrinext.agrimobile.Helpers.FrappeClient
-import org.agrinext.agrimobile.Helpers.ListViewAdapter
+import org.agrinext.agrimobile.Android.FrappeClient
+import org.agrinext.agrimobile.Android.ListViewAdapter
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.toast
 import org.json.JSONArray
@@ -83,8 +83,6 @@ class ProduceActivity : BaseCompatActivity() {
             }
         }
 
-        val authReqCallback = FrappeClient(this).getAuthReqCallback(request, responseCallback)
-        val retrieveAuthTokenTask = RetrieveAuthTokenTask(applicationContext, authReqCallback)
-        retrieveAuthTokenTask.execute()
+        FrappeClient(this).executeRequest(request, responseCallback)
     }
 }

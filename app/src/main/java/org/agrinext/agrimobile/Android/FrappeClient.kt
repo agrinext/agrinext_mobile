@@ -1,15 +1,15 @@
-package org.agrinext.agrimobile.Helpers
+package org.agrinext.agrimobile.Android
 
-import android.content.Context
-import android.net.ConnectivityManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.Verb
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import com.mntechnique.otpmobileauth.auth.AuthRequest
+import com.mntechnique.otpmobileauth.auth.RetrieveAuthTokenTask
 import org.json.JSONObject
-import java.net.URLEncoder
+import java.io.IOException
+import java.net.URL
 
 /**
  * Created by revant on 31/12/17.
@@ -24,13 +24,7 @@ class FrappeClient(ctx: AppCompatActivity){
         val clientSecret = ctx.resources.getString(org.agrinext.agrimobile.R.string.clientSecret)
         val serverURL = ctx.resources.getString(org.agrinext.agrimobile.R.string.serverURL)
         val redirectURI = ctx.resources.getString(org.agrinext.agrimobile.R.string.redirectURI)
-        val authEndpoint = ctx.resources.getString(org.agrinext.agrimobile.R.string.authEndpoint)
-        val tokenEndpoint = ctx.resources.getString(org.agrinext.agrimobile.R.string.tokenEndpoint)
-
-        val authRequest = AuthRequest(
-                ctx.applicationContext,
-                oauth2Scope, clientId, clientSecret, serverURL,
-                redirectURI, authEndpoint, tokenEndpoint)
+        val authRequest = AuthRequest(oauth2Scope, clientId, clientSecret, serverURL, redirectURI)
 
         return authRequest
     }
@@ -63,19 +57,19 @@ class FrappeClient(ctx: AppCompatActivity){
         val encoded_doctype = doctype.replace(" ", "%20")
         var requestURL = getServerURL() + "/api/resource/$encoded_doctype?"
 
-        if(filters!=null) {
+        if(!filters.isNullOrEmpty()) {
             requestURL += "filters=$filters&"
         }
 
-        if(fields!=null){
+        if(!fields.isNullOrEmpty()){
             requestURL += "fields=$fields&"
         }
 
-        if(limit_page_length!=null){
+        if(!limit_page_length.isNullOrEmpty()){
             requestURL += "limit_page_length=$limit_page_length&"
         }
 
-        if(limit_start!=null){
+        if(!limit_start.isNullOrEmpty()){
             requestURL += "limit_start=$limit_start&"
         }
 
@@ -85,22 +79,30 @@ class FrappeClient(ctx: AppCompatActivity){
 
         return frappeRequest
     }
-}
 
-fun checkNetworkConnection(context: Context): Boolean {
-    var haveConnectedWifi = false
-    var haveConnectedMobile = false
+    fun checkNetworkConnection(): Boolean {
 
-    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val netInfo = cm.allNetworkInfo
-    for (ni in netInfo) {
-        if (ni.typeName.equals("WIFI", ignoreCase = true))
-            if (ni.isConnected)
-                haveConnectedWifi = true
-        if (ni.typeName.equals("MOBILE", ignoreCase = true))
-            if (ni.isConnected)
-                haveConnectedMobile = true
+        return NetworkUtils.isWifiConnected(ctx) ||
+                NetworkUtils.isMobileConnected(ctx)||
+                NetworkUtils.isConnected(ctx)
     }
-    return haveConnectedWifi || haveConnectedMobile
-}
 
+    fun checkConnection(): Boolean {
+        val connectUrl = URL(getServerURL())
+        val connection = connectUrl.openConnection()
+        connection.connectTimeout = 3000
+        try {
+            connection.connect()
+            return true
+        } catch (e: IOException){
+            return false
+        }
+    }
+
+    fun executeRequest(request: OAuthRequest, callback: AuthReqCallback) {
+        RetrieveAuthTokenTask(
+                context = ctx.applicationContext,
+                callback = getAuthReqCallback(request, callback)
+        ).execute()
+    }
+}

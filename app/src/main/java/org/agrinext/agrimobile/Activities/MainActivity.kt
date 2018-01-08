@@ -37,7 +37,7 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if (data != null){
+        if (data != null) {
             if (requestCode == 1 && resultCode == Activity.RESULT_OK){
                 if (!data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME).isNullOrEmpty()){
                     for(a in accounts){
@@ -138,6 +138,9 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
 
             nav_view.setNavigationItemSelectedListener(this)
             desktop_text.setText(R.string.welcome)
+            linearLayoutDesktop.onClick {
+                toast(accounts[0].name)
+            }
         } else {
             desktop_text.setText(R.string.tapToSignIn)
             linearLayoutDesktop.onClick {

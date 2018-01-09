@@ -18,20 +18,25 @@ import org.json.JSONObject
  */
 
 class ListViewAdapter(var doc_list:JSONArray): RecyclerView.Adapter<ListViewAdapter.ViewHolder>(), Filterable {
-    var dataListFiltered = doc_list
+    fun setLoadDataCallback() {
+
+    }
+    val immutable_doc_list = doc_list
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                dataListFiltered = results?.values as JSONArray
-                Log.d("results", dataListFiltered.toString())
+                doc_list = results?.values as JSONArray
+                Log.d("results", doc_list.toString())
                 notifyDataSetChanged()
             }
 
             override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filterResults = FilterResults()
+
                 Log.d("constraint", constraint.toString())
                 val charString = constraint.toString();
                 if (charString.isNullOrEmpty()) {
-                    dataListFiltered = doc_list
+                    filterResults.values = immutable_doc_list
                 } else {
                     var filteredList = JSONArray()
                     for (i in 0..doc_list.length() - 1) {
@@ -41,11 +46,8 @@ class ListViewAdapter(var doc_list:JSONArray): RecyclerView.Adapter<ListViewAdap
                             filteredList.put(doc_list.getJSONObject(i))
                         }
                     }
-                    dataListFiltered = filteredList
+                    filterResults.values = filteredList
                 }
-
-                val filterResults = FilterResults()
-                filterResults.values = dataListFiltered
 
                 return filterResults
             }
@@ -67,15 +69,15 @@ class ListViewAdapter(var doc_list:JSONArray): RecyclerView.Adapter<ListViewAdap
 
     override fun getItemCount(): Int {
         // return listing size
-        return dataListFiltered.length()
+        return doc_list.length()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var p = position
-        while(dataListFiltered.length() < p){
-            p -= dataListFiltered.length()
+        while(doc_list.length() < p){
+            p -= doc_list.length()
         }
-        val jsonObject = dataListFiltered.getJSONObject(p)
+        val jsonObject = doc_list.getJSONObject(p)
         holder!!.bind(jsonObject)
     }
 }

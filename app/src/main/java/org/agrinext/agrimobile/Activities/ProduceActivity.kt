@@ -1,5 +1,6 @@
 package org.agrinext.agrimobile.Activities
 
+import android.accounts.Account
 import android.accounts.AccountManager
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -28,12 +29,21 @@ class ProduceActivity : BaseCompatActivity() {
     var recyclerAdapter: ListViewAdapter? = null
     var recyclerModels = JSONArray()
     var searchView : SearchView? = null
-
+    var mAccountManager: AccountManager? = null
+    var accounts: Array<Account>? = null
     internal lateinit var mRecyclerView: RecyclerView
     var progressBar: ProgressBar? = null
+    var filters: String? = null
+    var user:String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listing)
+        mAccountManager = AccountManager.get(this)
+        accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
+        user = accounts?.get(0)?.name
+
+        filters = "[[\"owner\",\"=\",\"" + user + "\"]]"
 
         mRecyclerView = findViewById(R.id.recycler_view)
         progressBar = findViewById(R.id.edit_progress_bar)
@@ -42,17 +52,20 @@ class ProduceActivity : BaseCompatActivity() {
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true)
 
+        setRecycleViewScrollListener()
+        loadData(filters = filters!!)
+    }
+
+    private fun setRecycleViewScrollListener() {
         // use a linear layout manager
         val mLayoutManager = LinearLayoutManager(this)
         mRecyclerView.setLayoutManager(mLayoutManager)
 
         mRecyclerView.addOnScrollListener(object: EndlessRecyclerViewScrollListener(mLayoutManager){
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-                loadData(page)
+                loadData(page, filters!!)
             }
         })
-
-        loadData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,13 +79,24 @@ class ProduceActivity : BaseCompatActivity() {
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 // filter recycler view when query submitted
-                recyclerAdapter?.filter?.filter(query)
-                return false
+                recyclerModels = JSONArray()
+                filters = "[[\"owner\",\"=\",\"$user\"],[\"name\",\"like\",\"%$query%\"]]"
+                loadData(filters=filters!!)
+                return true
             }
 
             override fun onQueryTextChange(query: String): Boolean {
                 // filter recycler view when text is changed
-                recyclerAdapter?.filter?.filter(query)
+                return false
+            }
+        })
+
+        searchView?.setOnCloseListener(object :SearchView.OnCloseListener {
+            override fun onClose(): Boolean {
+                recyclerModels = JSONArray()
+                filters = "[[\"owner\",\"=\",\"" + user + "\"]]"
+                loadData(filters=filters!!)
+                setRecycleViewScrollListener()
                 return false
             }
         })
@@ -81,23 +105,24 @@ class ProduceActivity : BaseCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.getItemId()
-        //noinspection SimplifiableIfStatement
         return if (id == R.id.action_search) {
             true
         } else super.onOptionsItemSelected(item)
     }
-    fun loadData(page: Int? = null) {
-        val mAccountManager = AccountManager.get(this)
-        val accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
+    fun loadData(page: Int? = null, filters: String, limit_page_length:String = "5") {
+        val limit_start = ((page?.times(limit_page_length.toInt()))?:0).toString()
 
-        val filters = "[[\"owner\",\"=\",\"" + accounts[0].name + "\"]]"
+        Log.d("Filters", filters)
+        Log.d("Limit_page_length", limit_page_length)
+        Log.d("limit_start", limit_start)
 
         val request = FrappeClient(this).get_all(
                 doctype = "Add Produce",
                 filters = filters,
-                limit_page_length = "5",
-                limit_start = (page?.times(5)).toString()
+                limit_page_length = limit_page_length,
+                limit_start = limit_start
         )
+
         val responseCallback = object : AuthReqCallback {
             override fun onSuccessResponse(s: String) {
                 val response = JSONObject(s)
@@ -113,10 +138,12 @@ class ProduceActivity : BaseCompatActivity() {
                     recyclerAdapter = ListViewAdapter(recyclerModels)
                     mRecyclerView.adapter = recyclerAdapter
                 }
+
                 progressBar?.visibility = View.GONE
             }
 
             override fun onErrorResponse(s: String) {
+                progressBar?.visibility = View.VISIBLE
                 toast(R.string.somethingWrong)
             }
         }

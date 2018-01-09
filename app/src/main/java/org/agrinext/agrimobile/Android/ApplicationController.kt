@@ -9,18 +9,26 @@ import com.android.volley.toolbox.DiskBasedCache
 import com.android.volley.toolbox.BasicNetwork
 import com.android.volley.toolbox.HurlStack
 import com.android.volley.toolbox.HttpStack
+import com.mntechnique.otpmobileauth.auth.AuthReqCallback
+import com.mntechnique.otpmobileauth.auth.RetrieveAuthTokenTask
 import org.agrinext.agrimobile.BuildConfig
 import org.acra.*
 import org.acra.annotation.*
 import org.acra.config.*
 import org.acra.data.StringFormat
 import org.acra.sender.HttpSender
+import org.json.JSONObject
+import org.agrinext.agrimobile.R
 
 /**
  * Created by revant on 31/12/17.
  */
 
 @AcraCore(buildConfigClass = BuildConfig::class)
+@AcraNotification(
+        resText = R.string.notification_text,
+        resTitle = R.string.notification_title,
+        resChannelName = R.string.app_name)
 class ApplicationController : Application() {
     internal var activityVisible = false
     lateinit var mRequestQueue: RequestQueue
@@ -35,15 +43,37 @@ class ApplicationController : Application() {
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
-        val serverUrl = baseContext.getString(org.agrinext.agrimobile.R.string.serverURL)
-        var headers = HashMap<String,String>()
-        headers.put("X-API-KEY", "420")
+
+        val frappeClient = FrappeClient(this)
+        val serverUrl = frappeClient.getServerURL()
+
         val builder = CoreConfigurationBuilder(this)
         builder.setBuildConfigClass(BuildConfig::class.java).setReportFormat(StringFormat.JSON)
+
+        var headers = HashMap<String, String>()
+
+        val getAccessTokenCallback = object : AuthReqCallback {
+            override fun onSuccessResponse(result: String) {
+                val bearerToken = JSONObject(result)
+                headers.put("Authorization", "Bearer ${bearerToken.getString("access_token")}")
+                setupBuilder(builder, headers, serverUrl)
+            }
+            override fun onErrorResponse(error: String) {
+                headers.put("X-API-KEY", "420")
+                setupBuilder(builder, headers, serverUrl)
+            }
+        }
+
+        RetrieveAuthTokenTask(this, getAccessTokenCallback).execute()
+    }
+
+    fun setupBuilder(builder: CoreConfigurationBuilder,
+                     headers: HashMap<String,String>,
+                     serverUrl:String) {
         builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder::class.java)
-                .setHttpHeaders(headers as Map<String, String>)
                 .setUri("$serverUrl/api/method/agrinext.api.report_error")
                 .setHttpMethod(HttpSender.Method.POST)
+                .setHttpHeaders(headers)
                 .setEnabled(true)
         ACRA.init(this, builder)
     }

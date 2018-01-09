@@ -26,6 +26,7 @@ android {
     dependencies {
         def acraVersion = '5.0.0'
         implementation "ch.acra:acra-http:$acraVersion"
+        implementation "ch.acra:acra-notification:$acraVersion"
 
         implementation fileTree(dir: 'libs', include: ['*.jar'])
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

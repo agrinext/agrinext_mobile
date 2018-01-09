@@ -1,6 +1,6 @@
 package org.agrinext.agrimobile.Android
 
-import android.support.v7.app.AppCompatActivity
+import android.content.Context
 import android.util.Log
 import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.Verb
@@ -15,22 +15,20 @@ import java.net.URL
  * Created by revant on 31/12/17.
  */
 
-class FrappeClient(ctx: AppCompatActivity){
+class FrappeClient(ctx: Context){
     val ctx = ctx
-
     fun getAuthRequest() : AuthRequest {
-        val oauth2Scope = ctx.resources.getString(org.agrinext.agrimobile.R.string.oauth2Scope)
-        val clientId = ctx.resources.getString(org.agrinext.agrimobile.R.string.clientId)
-        val clientSecret = ctx.resources.getString(org.agrinext.agrimobile.R.string.clientSecret)
-        val serverURL = ctx.resources.getString(org.agrinext.agrimobile.R.string.serverURL)
-        val redirectURI = ctx.resources.getString(org.agrinext.agrimobile.R.string.redirectURI)
+        val oauth2Scope = ctx.getString(org.agrinext.agrimobile.R.string.oauth2Scope)
+        val clientId = ctx.getString(org.agrinext.agrimobile.R.string.clientId)
+        val clientSecret = ctx.getString(org.agrinext.agrimobile.R.string.clientSecret)
+        val serverURL = ctx.getString(org.agrinext.agrimobile.R.string.serverURL)
+        val redirectURI = ctx.getString(org.agrinext.agrimobile.R.string.redirectURI)
         val authRequest = AuthRequest(oauth2Scope, clientId, clientSecret, serverURL, redirectURI)
-
         return authRequest
     }
 
     fun getServerURL () : String {
-        return ctx.resources.getString(org.agrinext.agrimobile.R.string.serverURL)
+        return ctx.getString(org.agrinext.agrimobile.R.string.serverURL)
     }
 
     fun getAuthReqCallback(request: OAuthRequest, responseCallback: AuthReqCallback) : AuthReqCallback {
@@ -101,7 +99,7 @@ class FrappeClient(ctx: AppCompatActivity){
 
     fun executeRequest(request: OAuthRequest, callback: AuthReqCallback) {
         RetrieveAuthTokenTask(
-                context = ctx.applicationContext,
+                context = ctx,
                 callback = getAuthReqCallback(request, callback)
         ).execute()
     }

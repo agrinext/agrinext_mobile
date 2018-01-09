@@ -42,4 +42,6 @@
     <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
     <string name="action_search">Search</string>
     <string name="acra_toast_text">Error Reported</string>
+    <string name="notification_text">Sorry, the app crashed. Please send a report to developers</string>
+    <string name="notification_title">AgriNext Crash Report</string>
 </resources>

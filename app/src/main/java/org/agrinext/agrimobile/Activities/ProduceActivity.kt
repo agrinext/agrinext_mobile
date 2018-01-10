@@ -34,6 +34,7 @@ class ProduceActivity : BaseCompatActivity() {
     var progressBar: ProgressBar? = null
     var filters: String? = null
     var user:String? = null
+    var loadServerData = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +53,7 @@ class ProduceActivity : BaseCompatActivity() {
         mRecyclerView.setHasFixedSize(true)
 
         setRecycleViewScrollListener()
+        loadServerData = true
         loadData(filters = filters!!)
     }
 
@@ -62,7 +64,9 @@ class ProduceActivity : BaseCompatActivity() {
 
         mRecyclerView.addOnScrollListener(object: EndlessRecyclerViewScrollListener(mLayoutManager){
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-                loadData(page, filters!!)
+                if(loadServerData){
+                    loadData(page, filters!!)
+                }
             }
         })
     }
@@ -113,6 +117,7 @@ class ProduceActivity : BaseCompatActivity() {
     }
     fun loadData(page: Int? = null, filters: String, limit_page_length:String = "5") {
         val limit_start = ((page?.times(limit_page_length.toInt()))?:0).toString()
+        progressBar?.visibility = View.VISIBLE
 
         Log.d("Filters", filters)
         Log.d("Limit_page_length", limit_page_length)
@@ -140,15 +145,18 @@ class ProduceActivity : BaseCompatActivity() {
                     recyclerAdapter = ListViewAdapter(recyclerModels)
                     mRecyclerView.adapter = recyclerAdapter
                 }
-
+                loadServerData = true
                 progressBar?.visibility = View.GONE
             }
 
             override fun onErrorResponse(s: String) {
+                loadServerData =  false
                 progressBar?.visibility = View.VISIBLE
                 toast(R.string.somethingWrong)
             }
         }
-        FrappeClient(this).executeRequest(request, responseCallback)
+        if(loadServerData) {
+            FrappeClient(this).executeRequest(request, responseCallback)
+        }
     }
 }

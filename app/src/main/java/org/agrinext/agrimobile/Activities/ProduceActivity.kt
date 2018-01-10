@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
-import android.widget.Filter
 import android.support.v7.widget.SearchView
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import org.agrinext.agrimobile.Android.BaseCompatActivity
@@ -87,6 +86,9 @@ class ProduceActivity : BaseCompatActivity() {
 
             override fun onQueryTextChange(query: String): Boolean {
                 // filter recycler view when text is changed
+                recyclerModels = JSONArray()
+                filters = "[[\"owner\",\"=\",\"$user\"],[\"name\",\"like\",\"%$query%\"]]"
+                loadData(filters=filters!!)
                 return false
             }
         })
@@ -147,7 +149,6 @@ class ProduceActivity : BaseCompatActivity() {
                 toast(R.string.somethingWrong)
             }
         }
-
         FrappeClient(this).executeRequest(request, responseCallback)
     }
 }

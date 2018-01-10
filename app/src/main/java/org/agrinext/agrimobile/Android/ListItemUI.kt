@@ -17,19 +17,35 @@ class ListItemUI : AnkoComponent<ViewGroup> {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun createView(ui: AnkoContext<ViewGroup>): View {
         // UI list item
-        return with(ui) {
+        val out = with(ui){
             linearLayout {
-                lparams(width = matchParent, height = dip(100))
+                lparams(width = matchParent, height = dip(200))
                 orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
                 cardView {
                     verticalLayout {
+                        padding = dip(10)
                         textView {
-                            gravity = Gravity.CENTER
-                            id = R.id.list_item
-                        }.lparams(width = matchParent, height = matchParent)
+                            gravity = Gravity.LEFT
+                            id = Ids.itemType
+                        }.lparams(width = matchParent, height = wrapContent)
+
+                        textView {
+                            gravity = Gravity.LEFT
+                            id = Ids.listItem
+                            textAppearance = R.style.Base_TextAppearance_AppCompat_Body1
+                        }.lparams(width = matchParent, height = wrapContent)
                     }.lparams(width = matchParent, height = matchParent)
-                }.lparams(height = dip(94), width = matchParent)
+                }.lparams(height = dip(190), width = matchParent)
             }
+        }
+        return out
+    }
+
+    companion object {
+        object Ids {
+            val itemType = 0
+            val listItem = 1
         }
     }
 }

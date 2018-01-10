@@ -31,6 +31,10 @@
     <string name="click_ok_when_enabled">Click Ok when enabled</string>
     <string name="ok">Ok</string>
     <string name="please_enable_net_connection">Please Enable Network Connection!</string>
+    <string name="action_search">Search</string>
+    <string name="acra_toast_text">Error Reported</string>
+    <string name="notification_text">Sorry, the app crashed. Please send a report to developers</string>
+    <string name="notification_title">AgriNext Crash Report</string>
 
     <!-- OAUTH -->
     <string name="package_name">org.agrinext.agrimobile</string>
@@ -40,8 +44,5 @@
     <string name="otpSenderNumber">88793</string>
     <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
     <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
-    <string name="action_search">Search</string>
-    <string name="acra_toast_text">Error Reported</string>
-    <string name="notification_text">Sorry, the app crashed. Please send a report to developers</string>
-    <string name="notification_title">AgriNext Crash Report</string>
+    <string name="item_type">Item Type</string>
 </resources>

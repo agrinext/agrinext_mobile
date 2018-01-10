@@ -23,6 +23,10 @@ import android.content.Context
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Spinner
+import android.widget.ArrayAdapter
+import java.util.ArrayList
+
 
 class ProduceActivity : BaseCompatActivity() {
     var recyclerAdapter: ListViewAdapter? = null
@@ -43,7 +47,12 @@ class ProduceActivity : BaseCompatActivity() {
         accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
         user = accounts?.get(0)?.name
 
-        filters = "[[\"owner\",\"=\",\"" + user + "\"]]"
+        val filtersArray = JSONArray()
+        // owner filter
+        var filterSet = JSONArray().put("owner").put("=").put(user)
+        filtersArray.put(filterSet)
+
+        filters = filtersArray.toString()
 
         mRecyclerView = findViewById(R.id.recycler_view)
         progressBar = findViewById(R.id.edit_progress_bar)
@@ -51,7 +60,16 @@ class ProduceActivity : BaseCompatActivity() {
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true)
-
+        var list = ArrayList<String>()
+        list.add("Mathura")
+        list.add("Delhi")
+        list.add("Agra")
+        var spinner = findViewById<Spinner>(R.id.spinner)
+        val spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = spinnerAdapter
+        spinnerAdapter.add("Mumbai")
+        spinnerAdapter.notifyDataSetChanged()
         setRecycleViewScrollListener()
         loadServerData = true
         loadData(filters = filters!!)
@@ -83,16 +101,28 @@ class ProduceActivity : BaseCompatActivity() {
             override fun onQueryTextSubmit(query: String): Boolean {
                 // filter recycler view when query submitted
                 recyclerModels = JSONArray()
-                filters = "[[\"owner\",\"=\",\"$user\"],[\"name\",\"like\",\"%$query%\"]]"
+                val filtersArray = JSONArray()
+
+                // owner filter
+                var filterSet = JSONArray().put("owner").put("=").put(user)
+                filtersArray.put(filterSet)
+
+                // name like query filter
+                filterSet = JSONArray().put("name").put("like").put("%$query%")
+                filtersArray.put(filterSet)
+
+                filters = filtersArray.toString()
                 loadData(filters=filters!!)
                 return true
             }
 
             override fun onQueryTextChange(query: String): Boolean {
                 // filter recycler view when text is changed
+                /*
                 recyclerModels = JSONArray()
                 filters = "[[\"owner\",\"=\",\"$user\"],[\"name\",\"like\",\"%$query%\"]]"
                 loadData(filters=filters!!)
+                */
                 return false
             }
         })
@@ -100,7 +130,12 @@ class ProduceActivity : BaseCompatActivity() {
         searchView?.setOnCloseListener(object :SearchView.OnCloseListener {
             override fun onClose(): Boolean {
                 recyclerModels = JSONArray()
-                filters = "[[\"owner\",\"=\",\"" + user + "\"]]"
+
+                var filtersArray = JSONArray()
+                val filterSet = JSONArray().put("owner").put("=").put(user)
+                filtersArray.put(filterSet)
+
+                filters = filtersArray.toString()
                 loadData(filters=filters!!)
                 setRecycleViewScrollListener()
                 return false
@@ -115,6 +150,15 @@ class ProduceActivity : BaseCompatActivity() {
             true
         } else super.onOptionsItemSelected(item)
     }
+
+    fun loadData(page:Int? = null, filters:JSONArray, limit_page_length: String = "5"){
+        loadData(page, filters.toString(), limit_page_length)
+    }
+
+    fun loadData(page:Int? = null, filters:JSONObject, limit_page_length: String = "5"){
+        loadData(page, filters.toString(), limit_page_length)
+    }
+
     fun loadData(page: Int? = null, filters: String, limit_page_length:String = "5") {
         val limit_start = ((page?.times(limit_page_length.toInt()))?:0).toString()
         progressBar?.visibility = View.VISIBLE

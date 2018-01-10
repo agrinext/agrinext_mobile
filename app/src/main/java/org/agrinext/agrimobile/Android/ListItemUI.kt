@@ -28,6 +28,7 @@ class ListItemUI : AnkoComponent<ViewGroup> {
                         textView {
                             gravity = Gravity.LEFT
                             id = Ids.itemType
+                            text = "DocType"
                         }.lparams(width = matchParent, height = wrapContent)
 
                         textView {

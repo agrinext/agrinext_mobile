@@ -51,7 +51,8 @@ class FrappeClient(ctx: Context){
                 filters: String? = null,
                 fields: String? = null,
                 limit_page_length: String? = null,
-                limit_start: String? = null) : OAuthRequest {
+                limit_start: String? = null,
+                order_by: String? = null) : OAuthRequest {
         val encoded_doctype = doctype.replace(" ", "%20")
         var requestURL = getServerURL() + "/api/resource/$encoded_doctype?"
 
@@ -69,6 +70,10 @@ class FrappeClient(ctx: Context){
 
         if(!limit_start.isNullOrEmpty()){
             requestURL += "limit_start=$limit_start&"
+        }
+
+        if(!order_by.isNullOrEmpty()) {
+            requestURL += "order_by=$order_by&"
         }
 
         Log.d("requestURL", requestURL)

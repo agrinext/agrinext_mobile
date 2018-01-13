@@ -51,6 +51,8 @@ class ApplicationController : Application() {
         builder.setBuildConfigClass(BuildConfig::class.java).setReportFormat(StringFormat.JSON)
 
         var headers = HashMap<String, String>()
+        headers.put("X-API-KEY", "420")
+        setupBuilder(builder, headers, serverUrl)
 
         val getAccessTokenCallback = object : AuthReqCallback {
             override fun onSuccessResponse(result: String) {

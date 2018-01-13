@@ -31,7 +31,6 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.ArrayList
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import org.agrinext.agrimobile.R.id.spinner
 
 
 
@@ -259,6 +258,12 @@ class ProduceActivity : BaseCompatActivity() {
         val sortOrderButton = find<Button>(R.id.sortOrderButton)
         sortOrderButton.onClick {
             recyclerModels = JSONArray()
+
+            // change icon
+            when(sortOrder) {
+                "desc" -> sortOrderButton.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_keyboard_arrow_down,0)
+                "asc" -> sortOrderButton.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_keyboard_arrow_up,0)
+            }
 
             var filtersArray = JSONArray()
             val filterSet = JSONArray().put("owner").put("=").put(user)

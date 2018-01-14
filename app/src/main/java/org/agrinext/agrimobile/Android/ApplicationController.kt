@@ -35,6 +35,7 @@ class ApplicationController : Application() {
     lateinit var mSerialRequestQueue: RequestQueue
     var MAX_SERIAL_THREAD_POOL_SIZE = 1
     val MAX_CACHE_SIZE = 2 * 1024 * 1024 //2 MB
+    var builder: CoreConfigurationBuilder? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -43,41 +44,40 @@ class ApplicationController : Application() {
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
-
+        val app = this
         val frappeClient = FrappeClient(this)
         val serverUrl = frappeClient.getServerURL()
-
-        val builder = CoreConfigurationBuilder(this)
-        builder.setBuildConfigClass(BuildConfig::class.java).setReportFormat(StringFormat.JSON)
-
-        var headers = HashMap<String, String>()
-        headers.put("X-API-KEY", "420")
-        setupBuilder(builder, headers, serverUrl)
 
         val getAccessTokenCallback = object : AuthReqCallback {
             override fun onSuccessResponse(result: String) {
                 val bearerToken = JSONObject(result)
+                var headers = HashMap<String, String>()
                 headers.put("Authorization", "Bearer ${bearerToken.getString("access_token")}")
-                setupBuilder(builder, headers, serverUrl)
+                setupBuilder(headers, serverUrl)
+                ACRA.init(app, builder!!)
+
             }
             override fun onErrorResponse(error: String) {
+                var headers = HashMap<String, String>()
                 headers.put("X-API-KEY", "420")
-                setupBuilder(builder, headers, serverUrl)
+                setupBuilder(headers, serverUrl)
+                ACRA.init(app, builder!!)
             }
         }
 
         RetrieveAuthTokenTask(this, getAccessTokenCallback).execute()
     }
 
-    fun setupBuilder(builder: CoreConfigurationBuilder,
-                     headers: HashMap<String,String>,
+    fun setupBuilder(headers: HashMap<String,String>,
                      serverUrl:String) {
-        builder.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder::class.java)
-                .setUri("$serverUrl/api/method/agrinext.api.report_error")
-                .setHttpMethod(HttpSender.Method.POST)
-                .setHttpHeaders(headers)
-                .setEnabled(true)
-        ACRA.init(this, builder)
+        builder = CoreConfigurationBuilder(this)
+        builder?.setBuildConfigClass(BuildConfig::class.java)
+                ?.setReportFormat(StringFormat.JSON)
+                ?.getPluginConfigurationBuilder(HttpSenderConfigurationBuilder::class.java)
+                ?.setUri("$serverUrl/api/method/agrinext.api.report_error")
+                ?.setHttpMethod(HttpSender.Method.POST)
+                ?.setHttpHeaders(headers)
+                ?.setEnabled(true)
     }
 
     fun getRequestQueue(): RequestQueue {

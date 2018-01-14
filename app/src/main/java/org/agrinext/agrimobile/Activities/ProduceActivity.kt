@@ -73,8 +73,6 @@ class ProduceActivity : BaseCompatActivity() {
         setupSortOrder()
 
         setRecycleViewScrollListener()
-        loadServerData = true
-        loadData(filters = filters!!)
     }
 
     fun setupSortSpinner() {
@@ -194,6 +192,8 @@ class ProduceActivity : BaseCompatActivity() {
     fun loadData(page: Int? = null,
                  filters: String,
                  limit_page_length:String = "5") {
+
+        if(recyclerModels.length() == 0) loadServerData = true
 
         // limit_start is page * limit_page_length or 0
         val limit_start = ((page?.times(limit_page_length.toInt()))?:0).toString()

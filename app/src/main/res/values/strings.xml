@@ -45,4 +45,8 @@
     <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
     <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
     <string name="item_type">Item Type</string>
+    <string name="last_modified_on">Last Modified On</string>
+    <string name="created_on">Created On</string>
+    <string name="most_used">Most Used</string>
+    <string name="sort_name">Name</string>
 </resources>

@@ -3,6 +3,7 @@ package org.agrinext.agrimobile.Activities
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Activity
+import android.app.ListActivity
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -19,10 +20,9 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.share
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
+import org.json.JSONArray
 import org.json.JSONException
 
 class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -99,13 +99,30 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
                 startActivity(Intent(this, ListingActivity::class.java))
             }
             R.id.nav_sellers -> {
-                startActivity(Intent(this, ListingActivity::class.java))
+                startActivityForResult(
+                        intentFor<ListingActivity>(ListingActivity.KEY_DOCTYPE to "Note"),
+                        ListingActivity.SET_DOCTYPE
+                )
             }
             R.id.nav_my_profile -> {
                 startActivity(Intent(this, UserProfile::class.java))
             }
             R.id.nav_my_produce -> {
-                startActivity(Intent(this, ProduceActivity::class.java))
+                val mAccountManager = AccountManager.get(this)
+                val accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
+                val user = accounts?.get(0)?.name
+
+                val filtersArray = JSONArray()
+                // owner filter
+                var filterSet = JSONArray().put("owner").put("=").put(user)
+                filtersArray.put(filterSet)
+                startActivityForResult(
+                        intentFor<ListingActivity>(
+                                ListingActivity.KEY_DOCTYPE to "Add Produce",
+                                ListingActivity.KEY_FILTERS to filtersArray.toString()
+                        ),
+                        ListingActivity.SET_DOCTYPE_FILTERS
+                )
             }
             R.id.nav_invite -> {
                 share("https://agrinext.org")

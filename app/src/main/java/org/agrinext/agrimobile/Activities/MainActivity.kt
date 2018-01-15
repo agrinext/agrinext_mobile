@@ -96,33 +96,16 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_market -> {
-                startActivity(Intent(this, ListingActivity::class.java))
+                startActivity<ListingActivity>()
             }
             R.id.nav_sellers -> {
-                startActivityForResult(
-                        intentFor<ListingActivity>(ListingActivity.KEY_DOCTYPE to "Note"),
-                        ListingActivity.SET_DOCTYPE
-                )
+                startActivity<ListingActivity>()
             }
             R.id.nav_my_profile -> {
-                startActivity(Intent(this, UserProfile::class.java))
+                startActivity<UserProfile>()
             }
             R.id.nav_my_produce -> {
-                val mAccountManager = AccountManager.get(this)
-                val accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
-                val user = accounts?.get(0)?.name
-
-                val filtersArray = JSONArray()
-                // owner filter
-                var filterSet = JSONArray().put("owner").put("=").put(user)
-                filtersArray.put(filterSet)
-                startActivityForResult(
-                        intentFor<ListingActivity>(
-                                ListingActivity.KEY_DOCTYPE to "Add Produce",
-                                ListingActivity.KEY_FILTERS to filtersArray.toString()
-                        ),
-                        ListingActivity.SET_DOCTYPE_FILTERS
-                )
+                startActivity<ProduceActivity>()
             }
             R.id.nav_invite -> {
                 share("https://agrinext.org")

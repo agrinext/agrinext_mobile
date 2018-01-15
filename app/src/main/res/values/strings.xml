@@ -49,4 +49,6 @@
     <string name="created_on">Created On</string>
     <string name="most_used">Most Used</string>
     <string name="sort_name">Name</string>
+    <string name="filters">Filters</string>
+    <string name="actionSort">Sort</string>
 </resources>

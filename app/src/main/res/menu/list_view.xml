@@ -8,4 +8,12 @@
         android:title="@string/action_search"
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView" />
+
+    <item
+        android:title="@string/filters"
+        android:id="@+id/action_filters"/>
+
+    <item
+        android:title="@string/actionSort"
+        android:id="@+id/action_sort"/>
 </menu>

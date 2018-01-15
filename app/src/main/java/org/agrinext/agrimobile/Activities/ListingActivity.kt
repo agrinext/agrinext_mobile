@@ -14,21 +14,13 @@ import org.json.JSONObject
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.Spinner
-import android.widget.ArrayAdapter
-import android.widget.Button
+import android.widget.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.ArrayList
-import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import com.github.scribejava.core.model.OAuthRequest
-import com.github.scribejava.core.model.Verb
 import org.agrinext.agrimobile.Android.*
 
 open class ListingActivity : BaseCompatActivity() {
@@ -44,6 +36,7 @@ open class ListingActivity : BaseCompatActivity() {
     var sortOrder: String? = "desc"
     var doctype: String? = null
     var doctypeMetaJson = JSONObject()
+
     companion object {
         val DOCTYPE_META = "DOCTYPE_META"
         val KEY_DOCTYPE = "doctype"
@@ -61,7 +54,7 @@ open class ListingActivity : BaseCompatActivity() {
 
         setupFilters()
 
-        setupRecyclerView()
+        setupView()
 
         setupSortSpinner()
 
@@ -137,10 +130,9 @@ open class ListingActivity : BaseCompatActivity() {
     }
 
     open fun setupDocType() {
-        if(intent.hasExtra(KEY_DOCTYPE))
-            this.doctype = intent.extras.getString(KEY_DOCTYPE)
-        else
+        if (doctype == null) {
             this.doctype = "Note"
+        }
 
         val keyDocTypeMeta = StringUtil.slugify(this.doctype) + "_meta"
         var pref = getSharedPreferences(DOCTYPE_META, 0)
@@ -153,7 +145,7 @@ open class ListingActivity : BaseCompatActivity() {
         }
     }
 
-    fun setupRecyclerView() {
+    fun setupView() {
         mRecyclerView = findViewById(R.id.recycler_view)
         progressBar = findViewById(R.id.edit_progress_bar)
         progressBar?.visibility = View.VISIBLE
@@ -163,10 +155,7 @@ open class ListingActivity : BaseCompatActivity() {
     }
 
     open fun setupFilters() {
-        if(intent.hasExtra(KEY_FILTERS))
-            this.filters = JSONArray(intent.extras.getString(KEY_FILTERS))
-        else
-            this.filters = JSONArray()
+        this.filters = JSONArray()
     }
 
     fun setupSortSpinner() {
@@ -188,7 +177,7 @@ open class ListingActivity : BaseCompatActivity() {
             }
 
             override fun onNothingSelected(parentView: AdapterView<*>) {
-                // your code here
+                // Nothing selected
             }
 
         }

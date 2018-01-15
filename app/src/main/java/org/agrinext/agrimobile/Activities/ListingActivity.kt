@@ -1,29 +1,34 @@
 package org.agrinext.agrimobile.Activities
 
 import android.app.Activity
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Menu
 import android.support.v7.widget.SearchView
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.toast
 import org.json.JSONArray
 import org.json.JSONObject
-import android.app.SearchManager
-import android.content.Context
 import android.content.Intent
-import android.view.MenuItem
-import android.view.View
+import android.support.v4.app.Fragment
+import android.view.*
 import android.widget.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.ArrayList
 import android.widget.AdapterView.OnItemSelectedListener
 import org.agrinext.agrimobile.Android.*
+import android.view.MenuInflater
+import kotlinx.android.synthetic.main.activity_listing.*
+import kotlinx.android.synthetic.main.content_main.*
+import org.jetbrains.anko.support.v4.find
+import org.jetbrains.anko.support.v4.toast
 
-open class ListingActivity : BaseCompatActivity() {
+
+open class ListingActivity : Fragment() {
 
     internal lateinit var mRecyclerView: RecyclerView
     var recyclerAdapter: ListViewAdapter? = null
@@ -46,9 +51,13 @@ open class ListingActivity : BaseCompatActivity() {
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater?.inflate(R.layout.activity_listing, null)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_listing)
 
         setupDocType()
 
@@ -63,12 +72,13 @@ open class ListingActivity : BaseCompatActivity() {
         setRecycleViewScrollListener()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.list_view, menu)
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.list_view, menu)
         // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
-        searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        searchView?.setSearchableInfo(searchManager.getSearchableInfo(activity.componentName))
         searchView?.setMaxWidth(Integer.MAX_VALUE)
         // listening to search query text change
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -104,14 +114,18 @@ open class ListingActivity : BaseCompatActivity() {
                 return false
             }
         })
-        return true
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item?.getItemId()
-        return if (id == R.id.action_search) {
-            true
-        } else super.onOptionsItemSelected(item)
+        when(item?.itemId){
+            R.id.action_search -> return true
+            R.id.action_sort -> {
+                sortLayout.visibility = View.VISIBLE
+                return true
+            }
+            else -> return false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -135,19 +149,19 @@ open class ListingActivity : BaseCompatActivity() {
         }
 
         val keyDocTypeMeta = StringUtil.slugify(this.doctype) + "_meta"
-        var pref = getSharedPreferences(DOCTYPE_META, 0)
+        var pref = activity.getSharedPreferences(DOCTYPE_META, 0)
         val editor = pref.edit()
         val doctypeMetaString = pref.getString(keyDocTypeMeta, null)
         if (doctypeMetaString != null){
             this.doctypeMetaJson = JSONObject(doctypeMetaString)
         } else {
-            frappeClient.retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
+            FrappeClient(activity).retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
         }
     }
 
     fun setupView() {
-        mRecyclerView = findViewById(R.id.recycler_view)
-        progressBar = findViewById(R.id.edit_progress_bar)
+        mRecyclerView = activity.findViewById(R.id.recycler_view)
+        progressBar = activity.findViewById(R.id.edit_progress_bar)
         progressBar?.visibility = View.VISIBLE
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -165,8 +179,8 @@ open class ListingActivity : BaseCompatActivity() {
             add(getString(R.string.created_on))
             add(getString(R.string.most_used))
         }
-        var spinner = findViewById<Spinner>(R.id.spinner)
-        val spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list)
+        var spinner = activity.findViewById<Spinner>(R.id.spinner)
+        val spinnerAdapter = ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item, list)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = spinnerAdapter
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
@@ -185,7 +199,7 @@ open class ListingActivity : BaseCompatActivity() {
 
     fun setRecycleViewScrollListener() {
         // use a linear layout manager
-        val mLayoutManager = LinearLayoutManager(this)
+        val mLayoutManager = LinearLayoutManager(activity)
         mRecyclerView.setLayoutManager(mLayoutManager)
 
         mRecyclerView.addOnScrollListener(object: EndlessRecyclerViewScrollListener(mLayoutManager){
@@ -193,6 +207,10 @@ open class ListingActivity : BaseCompatActivity() {
                 if(loadServerData){
                     loadData(page, filters!!)
                 }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                sortLayout.visibility = View.GONE
             }
         })
     }
@@ -210,7 +228,7 @@ open class ListingActivity : BaseCompatActivity() {
         progressBar?.visibility = View.VISIBLE
 
         // set order
-        val sortSpinner = find<Spinner>(R.id.spinner)
+        val sortSpinner = activity.find<Spinner>(R.id.spinner)
         val spinnerLabel = sortSpinner.selectedItem.toString()
         var spinnerField:String? = "modified"
 
@@ -224,7 +242,7 @@ open class ListingActivity : BaseCompatActivity() {
 
         order_by = "$spinnerField+$sortOrder"
 
-        val request = FrappeClient(this).get_all(
+        val request = FrappeClient(activity).get_all(
                 doctype = doctype!!,
                 filters = filters.toString(),
                 limit_page_length = limit_page_length,
@@ -258,7 +276,7 @@ open class ListingActivity : BaseCompatActivity() {
             }
         }
         if(loadServerData) {
-            FrappeClient(this).executeRequest(request, responseCallback)
+            FrappeClient(activity).executeRequest(request, responseCallback)
         }
     }
 

@@ -25,22 +25,12 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="10"
             android:background="@android:color/transparent"
             android:clickable="true"
-            android:drawableRight="@drawable/ic_keyboard_arrow_up" />
+            android:focusable="true"
+            android:layout_weight="10"
+            android:drawableEnd="@drawable/ic_keyboard_arrow_up" />
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/edit_progress_bar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:indeterminate="false"
-        android:padding="1dp"
-        android:visibility="visible" />
 
     <android.support.v7.widget.RecyclerView
     android:id="@+id/recycler_view"
@@ -49,6 +39,17 @@
     android:layout_weight="8"
     tools:layout_editor_absoluteY="60dp">
 
-</android.support.v7.widget.RecyclerView>
+    </android.support.v7.widget.RecyclerView>
+
+    <ProgressBar
+        android:id="@+id/edit_progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:indeterminate="false"
+        android:visibility="visible"
+        android:backgroundTint="@android:color/transparent"/>
 
 </LinearLayout>

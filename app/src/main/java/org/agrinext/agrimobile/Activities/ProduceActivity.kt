@@ -6,7 +6,7 @@ import org.json.JSONArray
 class ProduceActivity : ListingActivity() {
 
     override fun setupFilters() {
-        val mAccountManager = AccountManager.get(this)
+        val mAccountManager = AccountManager.get(activity)
         val accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
         val user = accounts?.get(0)?.name
 

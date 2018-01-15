@@ -7,10 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.support.v7.widget.SearchView
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
-import org.agrinext.agrimobile.Android.BaseCompatActivity
-import org.agrinext.agrimobile.Android.EndlessRecyclerViewScrollListener
-import org.agrinext.agrimobile.Android.FrappeClient
-import org.agrinext.agrimobile.Android.ListViewAdapter
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.toast
 import org.json.JSONArray
@@ -18,6 +14,7 @@ import org.json.JSONObject
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -30,8 +27,12 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.ArrayList
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import com.github.scribejava.core.model.OAuthRequest
+import com.github.scribejava.core.model.Verb
+import org.agrinext.agrimobile.Android.*
 
 open class ListingActivity : BaseCompatActivity() {
+
     internal lateinit var mRecyclerView: RecyclerView
     var recyclerAdapter: ListViewAdapter? = null
     var recyclerModels = JSONArray()
@@ -42,7 +43,9 @@ open class ListingActivity : BaseCompatActivity() {
     var order_by:String? = "modified+desc"
     var sortOrder: String? = "desc"
     var doctype: String? = null
+    var doctypeMetaJson = JSONObject()
     companion object {
+        val DOCTYPE_META = "DOCTYPE_META"
         val KEY_DOCTYPE = "doctype"
         val KEY_FILTERS = "filters"
         val SET_DOCTYPE = 400
@@ -138,6 +141,16 @@ open class ListingActivity : BaseCompatActivity() {
             this.doctype = intent.extras.getString(KEY_DOCTYPE)
         else
             this.doctype = "Note"
+
+        val keyDocTypeMeta = StringUtil.slugify(this.doctype) + "_meta"
+        var pref = getSharedPreferences(DOCTYPE_META, 0)
+        val editor = pref.edit()
+        val doctypeMetaString = pref.getString(keyDocTypeMeta, null)
+        if (doctypeMetaString != null){
+            this.doctypeMetaJson = JSONObject(doctypeMetaString)
+        } else {
+            frappeClient.retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
+        }
     }
 
     fun setupRecyclerView() {
@@ -170,7 +183,6 @@ open class ListingActivity : BaseCompatActivity() {
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
                 recyclerModels = JSONArray()
-
                 loadData(filters = filters!!)
                 setRecycleViewScrollListener()
             }

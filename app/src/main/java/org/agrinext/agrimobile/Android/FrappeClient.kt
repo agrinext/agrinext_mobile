@@ -1,6 +1,7 @@
 package org.agrinext.agrimobile.Android
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.Verb
@@ -108,4 +109,24 @@ class FrappeClient(ctx: Context){
                 callback = getAuthReqCallback(request, callback)
         ).execute()
     }
+
+    fun retrieveDocTypeMeta(editor: SharedPreferences.Editor, key: String, doctype: String?) {
+
+        val request = OAuthRequest(Verb.GET, "${getServerURL()}/api/method/agrinext.api.get_meta?doctype=${doctype}")
+        val callback = object: AuthReqCallback {
+            override fun onSuccessResponse(result: String) {
+                val doctypeMetaJson = JSONObject(result).getJSONObject("message")
+                editor.putString(key, doctypeMetaJson.toString())
+                editor.commit()
+            }
+
+            override fun onErrorResponse(error: String) {
+                Log.d("DocTypeMeta", "ResponseError")
+            }
+
+        }
+
+        executeRequest(request, callback)
+    }
+
 }

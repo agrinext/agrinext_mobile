@@ -158,12 +158,7 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
             nav_view.setNavigationItemSelectedListener(this)
             desktop_text.setText(R.string.welcome)
             linearLayoutDesktop.onClick {
-                toast(accounts[0].name)
-                try {
-                    throw JSONException("JSONError")
-                } catch (e: JSONException) {
-                    throw RuntimeException(e)
-                }
+                toast(R.string.app_name)
             }
         } else {
             desktop_text.setText(R.string.tapToSignIn)

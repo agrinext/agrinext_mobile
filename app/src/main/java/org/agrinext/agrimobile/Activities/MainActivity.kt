@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.Nullable
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
@@ -23,13 +24,13 @@ import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.*
+import org.jetbrains.anko.db.NULL
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
 class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     internal lateinit var mAccountManager: AccountManager
     internal lateinit var accounts: Array <Account>
-    lateinit var fragment: Fragment
     val ACCOUNT_TYPE = "ACCOUNT_TYPE"
     val TAG = "AgriNext"
 
@@ -38,26 +39,6 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
         setContentView(R.layout.activity_main)
 
         fireUp()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if (data != null) {
-            if (requestCode == 1 && resultCode == AppCompatActivity.RESULT_OK){
-                if (!data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME).isNullOrEmpty()){
-                    for(a in accounts){
-                        if(a.name.equals(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))){
-                            Log.d(TAG, a.name)
-                        }
-                    }
-                } else {
-                    finish()
-                }
-            }
-        } else if (data === null) {
-            toast(R.string.somethingWrong)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
     }
 
     override fun onRestart() {
@@ -98,43 +79,39 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_market -> {
-                fragment = ListingActivity()
+                setupFragment(ListingActivity())
             }
             R.id.nav_sellers -> {
-                fragment = ListingActivity()
+                setupFragment(ListingActivity())
             }
             R.id.nav_my_profile -> {
-                fragment = UserProfile()
+                setupFragment(UserProfile())
             }
             R.id.nav_my_produce -> {
-                fragment = ProduceActivity()
+                setupFragment(ProduceActivity())
             }
             R.id.nav_invite -> {
                 share("https://agrinext.org")
             }
             R.id.nav_locations -> {
-                fragment = ListingActivity()
+                setupFragment(ListingActivity())
             }
             R.id.nav_items -> {
-                fragment = ListingActivity()
+                setupFragment(ListingActivity())
             }
-        }
-
-        if (fragment != null) {
-
-            linearLayoutDesktop.visibility = View.GONE
-            var fragmentManager = getSupportFragmentManager()
-            var ft = fragmentManager.beginTransaction()
-
-            ft.replace(R.id.screen_area, fragment)
-            ft.commit()
-
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
+    fun setupFragment(fragment:Fragment) {
+        linearLayoutDesktop.visibility = View.GONE
+        var fragmentManager = getSupportFragmentManager()
+        var ft = fragmentManager.beginTransaction()
+        ft.replace(R.id.screen_area, fragment)
+        ft.commit()
+    }
     fun fireUp() {
         mAccountManager = AccountManager.get(this)
         accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)

@@ -59,7 +59,8 @@ class ApplicationController : Application() {
             }
             override fun onErrorResponse(error: String) {
                 var headers = HashMap<String, String>()
-                headers.put("X-API-KEY", "420")
+                val guest_api_key = getString(R.string.guest_api_key)
+                headers.put("X-API-KEY", guest_api_key)
                 setupBuilder(headers, serverUrl)
                 ACRA.init(app, builder!!)
             }

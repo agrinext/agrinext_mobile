@@ -35,15 +35,6 @@
     <string name="acra_toast_text">Error Reported</string>
     <string name="notification_text">Sorry, the app crashed. Please send a report to developers</string>
     <string name="notification_title">AgriNext Crash Report</string>
-
-    <!-- OAUTH -->
-    <string name="package_name">org.agrinext.agrimobile</string>
-    <string name="serverURL">http://192.168.0.108:8000</string>
-    <string name="clientId">6663db6e09</string>
-    <string name="allowMultipleAccounts">0</string>
-    <string name="otpSenderNumber">88793</string>
-    <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
-    <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
     <string name="item_type">Item Type</string>
     <string name="last_modified_on">Last Modified On</string>
     <string name="created_on">Created On</string>
@@ -51,4 +42,17 @@
     <string name="sort_name">Name</string>
     <string name="filters">Filters</string>
     <string name="actionSort">Sort</string>
+
+    <!-- OAUTH -->
+    <string name="package_name">org.agrinext.agrimobile</string>
+    <string name="serverURL">https://api.agrinext.org</string>
+    <string name="clientId">35096219f0</string>
+    <string name="allowMultipleAccounts">0</string>
+    <string name="otpSenderNumber">88793</string>
+    <string name="getOTPEndpoint">/api/method/agrinext.otp.get</string>
+    <string name="authOTPEndpoint">/api/method/agrinext.otp.authenticate</string>
+
+    <!-- AgriNext -->
+    <string name="guest_api_key">dd35bcc1e134e69e7c318c0748622d19ecf025e0ef5492ddef3f5f77</string>
+
 </resources>

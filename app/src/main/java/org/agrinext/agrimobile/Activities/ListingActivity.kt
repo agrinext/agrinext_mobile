@@ -291,6 +291,8 @@ open class ListingActivity : Fragment() {
             }
             // name like query filter
             sortOrder = if (sortOrder == "desc") "asc" else "desc"
+
+            recyclerModels = JSONArray()
             loadData(filters = filters!!)
             setRecycleViewScrollListener()
         }

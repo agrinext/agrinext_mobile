@@ -22,7 +22,7 @@ class UserProfile : Fragment() {
         val imageView = activity.findViewById<ImageView>(R.id.ivProfileImage)
         imageView.onClick {
             val intent = Intent(activity.baseContext, FormGeneratorActivity::class.java)
-            intent.putExtra(DOCTYPE, "Add Produce")
+            intent.putExtra(DOCTYPE, "Produce")
             startActivityForResult(intent, SHOW_FORM_REQUEST)
         }
     }

@@ -19,7 +19,7 @@ class ProduceActivity : ListingActivity() {
     }
 
     override fun setupDocType() {
-        this.doctype = "Add Produce"
+        this.doctype = "Produce"
         super.setupDocType()
     }
 }

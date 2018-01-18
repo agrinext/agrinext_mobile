@@ -1,23 +1,25 @@
 package org.agrinext.agrimobile.Android
 
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.View.inflate
+import android.util.Log
+import org.agrinext.agrimobile.Activities.ListingActivity
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.alert
-
-/**
- * Created by revant on 6/1/18.
- */
+import org.json.JSONObject
 
 open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.ConnectivityReceiverListener {
     val connectivityReceiver = ConnectivityReceiver()
     val frappeClient = FrappeClient(this)
+
+    var docMeta: JSONObject? = null
+    var doctype: String? = null
+
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         checkNetworkState()
     }
@@ -66,5 +68,36 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
         ApplicationController.instance?.setConnectivityListener(this);
         ApplicationController.instance?.activityResumed()
         registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    open fun setupDocType(doctype:String) {
+        Log.d("DOC", doctype)
+        this.doctype = doctype
+        val keyDocTypeMeta = StringUtil.slugify(this.doctype) + "_meta"
+        var pref = getSharedPreferences(ListingActivity.DOCTYPE_META, 0)
+        val editor = pref.edit()
+        val doctypeMetaString = pref.getString(keyDocTypeMeta, null)
+        if (doctypeMetaString != null){
+            this.docMeta = JSONObject(doctypeMetaString)
+        } else {
+            FrappeClient(applicationContext).retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            when (requestCode) {
+                SHOW_REQUEST -> {
+                    Log.d("DocTypeActRes", data?.extras?.getString(DOCTYPE)!!)
+                    setupDocType(data?.extras?.getString(DOCTYPE)!!)
+                }
+            }
+        }
+    }
+
+    companion object {
+        val SHOW_REQUEST = 500
+        val DOCTYPE = "doctype"
     }
 }

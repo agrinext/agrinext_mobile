@@ -22,6 +22,8 @@ import android.widget.AdapterView.OnItemSelectedListener
 import org.agrinext.agrimobile.Android.*
 import android.view.MenuInflater
 import kotlinx.android.synthetic.main.activity_listing.*
+import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
+import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 
 
@@ -121,11 +123,16 @@ open class ListingActivity : Fragment() {
                 sortLayout.visibility = View.VISIBLE
                 return true
             }
+            R.id.action_filters -> {
+                startActivity<FiltersActivity>(DOCTYPE to this.doctype!!)
+                return true
+            }
             else -> return false
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         when(requestCode){
             SET_DOCTYPE -> {
                 if (resultCode == Activity.RESULT_OK && data != null)

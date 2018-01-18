@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import org.agrinext.agrimobile.R
-import org.jetbrains.anko.toast
 import org.json.JSONArray
 import org.json.JSONObject
 import android.content.Intent
@@ -23,8 +22,6 @@ import android.widget.AdapterView.OnItemSelectedListener
 import org.agrinext.agrimobile.Android.*
 import android.view.MenuInflater
 import kotlinx.android.synthetic.main.activity_listing.*
-import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.support.v4.find
 import org.jetbrains.anko.support.v4.toast
 
 
@@ -263,7 +260,9 @@ open class ListingActivity : Fragment() {
                 } else if (page == null) {
                     // specify and add an adapter
                     recyclerAdapter = ListViewAdapter(recyclerModels)
-                    mRecyclerView.adapter = recyclerAdapter
+
+                    if (mRecyclerView.adapter == null)
+                        mRecyclerView.adapter = recyclerAdapter
                 }
                 loadServerData = true
                 progressBar?.visibility = View.GONE
@@ -276,14 +275,14 @@ open class ListingActivity : Fragment() {
             }
         }
         if(loadServerData) {
+            loadServerData = false
             FrappeClient(activity).executeRequest(request, responseCallback)
         }
     }
 
     fun setupSortOrder() {
-        val sortOrderButton = find<Button>(R.id.sortOrderButton)
+        val sortOrderButton = activity.find<Button>(R.id.sortOrderButton)
         sortOrderButton.onClick {
-            recyclerModels = JSONArray()
             // change icon
             when(sortOrder) {
                 "desc" -> sortOrderButton.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_keyboard_arrow_down,0)

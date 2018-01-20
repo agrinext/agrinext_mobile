@@ -259,7 +259,7 @@ open class ListingActivity : Fragment() {
                     recyclerAdapter!!.notifyDataSetChanged()
                 } else if (page == null) {
                     // specify and add an adapter
-                    recyclerAdapter = ListViewAdapter(recyclerModels)
+                    recyclerAdapter = ListViewAdapter(recyclerModels, activity)
 
                     if (mRecyclerView.adapter == null)
                         mRecyclerView.adapter = recyclerAdapter

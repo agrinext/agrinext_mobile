@@ -29,10 +29,7 @@ class FiltersItemUI: AnkoComponent<ViewGroup> {
                 cardView {
                     verticalLayout {
                         spinner {
-                            var list = ArrayList<String>()
-                            val spinnerAdapter = ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, list)
-                            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                            adapter = spinnerAdapter
+                            id = Ids.docFieldSpinner
                         }
 
                         spinner {
@@ -64,6 +61,7 @@ class FiltersItemUI: AnkoComponent<ViewGroup> {
         object Ids {
             val fieldName = 0
             val listItem = 1
+            val docFieldSpinner = 2
         }
     }
     /*

@@ -1,16 +1,17 @@
 package org.agrinext.agrimobile.Android
 
+import android.R
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.TextView
+import android.widget.*
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.find
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.ArrayList
 
 /**
  * Created by revant on 28/12/17.
@@ -18,13 +19,21 @@ import org.json.JSONObject
 
 class FilterViewAdapter(var filterList:JSONArray): RecyclerView.Adapter<FilterViewAdapter.ViewHolder>() {
     val immutableFilterlist = filterList
-
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+
         // Get list_item (and other fields) from ListItemUI
-        val name: TextView = itemView.find(FiltersItemUI.Companion.Ids.fieldName)
+        val spinner: Spinner = itemView.find(FiltersItemUI.Companion.Ids.docFieldSpinner)
         // Bind values to name and other fields above
-        fun bind(jsonObject: JSONObject?) {
-            name.text = "abc"//jsonObject?.getString("name")
+        fun bind(jsonArray: JSONArray?) {
+            var list = ArrayList<String>()
+
+            for(i in 0 until jsonArray?.length()!! - 1){
+                list.add(jsonArray.getString(i))
+            }
+            val spinnerAdapter = ArrayAdapter<String>(itemView.context, R.layout.simple_spinner_item, list)
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = spinnerAdapter
         }
     }
 
@@ -42,7 +51,7 @@ class FilterViewAdapter(var filterList:JSONArray): RecyclerView.Adapter<FilterVi
         while(filterList.length() < p){
             p -= filterList.length()
         }
-        val jsonObject = filterList.getJSONObject(p)
-        holder!!.bind(jsonObject)
+        val jsonArray = filterList.getJSONArray(p)
+        holder!!.bind(jsonArray)
     }
 }

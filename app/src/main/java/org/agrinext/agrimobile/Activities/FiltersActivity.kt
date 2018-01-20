@@ -3,6 +3,7 @@ package org.agrinext.agrimobile.Activities
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_filters.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.Android.FilterViewAdapter
@@ -30,6 +31,8 @@ class FiltersActivity : BaseCompatActivity() {
         mRecyclerView.setLayoutManager(mLayoutManager)
 
         recyclerAdapter = FilterViewAdapter(recyclerModels)
+        mRecyclerView.adapter = recyclerAdapter
+
         //set doctype and meta
         if(intent.hasExtra(DOCTYPE)){
             setupDocType(intent.getStringExtra(DOCTYPE))
@@ -40,11 +43,16 @@ class FiltersActivity : BaseCompatActivity() {
         mRecyclerView.setHasFixedSize(true)
 
         bAddFilter.onClick {
-            recyclerModels.put(JSONObject("\"name\":\"b\""))
-            recyclerAdapter!!.notifyDataSetChanged()
-        }
+            var jsonArray = JSONArray()
+            val fields = docMeta?.getJSONArray("fields")!!
 
-        if (mRecyclerView.adapter == null)
-        mRecyclerView.adapter = recyclerAdapter
+            for (i in 0 until fields.length() - 1){
+                if(fields.getJSONObject(i).has("label")){
+                    jsonArray.put(fields.getJSONObject(i).getString("label"))
+                }
+            }
+            recyclerModels.put(jsonArray)
+            recyclerAdapter!!.notifyItemInserted(recyclerModels.length() - 1)
+        }
     }
 }

@@ -184,6 +184,17 @@ open class ListingActivity : Fragment() {
             add(getString(R.string.created_on))
             add(getString(R.string.most_used))
         }
+
+        val fields = doctypeMetaJson.getJSONArray("fields")
+        for (i in 0 until fields.length() -1 ){
+            val bold = fields.getJSONObject(i).getInt("bold")
+            val reqd = fields.getJSONObject(i).getInt("reqd")
+
+            if(reqd != 0 || bold != 0){
+                list.add(fields.getJSONObject(i).getString("label"))
+            }
+        }
+
         var spinner = activity.findViewById<Spinner>(R.id.spinner)
         val spinnerAdapter = ArrayAdapter<String>(activity, android.R.layout.simple_spinner_item, list)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -236,14 +247,22 @@ open class ListingActivity : Fragment() {
         // set order
         val sortSpinner = activity.find<Spinner>(R.id.spinner)
         val spinnerLabel = sortSpinner.selectedItem.toString()
-        var spinnerField:String? = "modified"
+        val fields = doctypeMetaJson.getJSONArray("fields")
+
+        var spinnerField = "modified"
+
+        for (i in 0 until fields.length() - 1){
+            if(fields.getJSONObject(i).has("label") && fields.getJSONObject(i).getString("label") == spinnerLabel){
+                spinnerField = fields.getJSONObject(i).getString("fieldname")
+                break
+            }
+        }
 
         when(spinnerLabel){
             getString(R.string.last_modified_on) -> spinnerField="modified"
             getString(R.string.sort_name) -> spinnerField="name"
             getString(R.string.created_on) -> spinnerField="creation"
             getString(R.string.most_used) -> spinnerField="idx"
-            else -> spinnerField="modified"
         }
 
         order_by = "$spinnerField+$sortOrder"

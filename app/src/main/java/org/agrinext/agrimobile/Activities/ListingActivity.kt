@@ -191,6 +191,7 @@ open class ListingActivity : Fragment() {
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
                 recyclerModels = JSONArray()
+                mRecyclerView.adapter = null
                 loadData(filters = filters!!)
                 setRecycleViewScrollListener()
             }
@@ -300,6 +301,7 @@ open class ListingActivity : Fragment() {
             sortOrder = if (sortOrder == "desc") "asc" else "desc"
 
             recyclerModels = JSONArray()
+            mRecyclerView.adapter = null
             loadData(filters = filters!!)
             setRecycleViewScrollListener()
         }

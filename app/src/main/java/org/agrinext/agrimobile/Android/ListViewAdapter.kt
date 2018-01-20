@@ -12,6 +12,9 @@ import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.find
 import org.json.JSONArray
 import org.json.JSONObject
+import java.nio.file.Files.size
+
+
 
 /**
  * Created by revant on 28/12/17.
@@ -51,6 +54,17 @@ class ListViewAdapter(var doc_list:JSONArray): RecyclerView.Adapter<ListViewAdap
 
                 return filterResults
             }
+        }
+    }
+
+    fun clear() {
+        val size = this.doc_list.length()
+        if (size > 0) {
+            for (i in 0 until size) {
+                this.doc_list.remove(0)
+            }
+            this.notifyItemRangeRemoved(0, size)
+
         }
     }
 

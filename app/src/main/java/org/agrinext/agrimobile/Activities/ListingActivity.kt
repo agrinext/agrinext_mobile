@@ -13,6 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import android.content.Intent
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.*
 import android.widget.*
 import org.jetbrains.anko.find
@@ -47,7 +48,6 @@ open class ListingActivity : Fragment() {
         val KEY_FILTERS = "filters"
         val SET_DOCTYPE = 400
         val SET_DOCTYPE_FILTERS = 401
-
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -84,12 +84,12 @@ open class ListingActivity : Fragment() {
             override fun onQueryTextSubmit(query: String): Boolean {
                 // filter recycler view when query submitted
                 recyclerModels = JSONArray()
-
+                mRecyclerView.adapter = null
                 // name like query filter
                 setupFilters()
                 filters.put(JSONArray().put("name").put("like").put("%$query%"))
 
-                loadData(filters=filters!!)
+                loadData(filters=filters)
                 return true
             }
 
@@ -107,8 +107,9 @@ open class ListingActivity : Fragment() {
         searchView?.setOnCloseListener(object :SearchView.OnCloseListener {
             override fun onClose(): Boolean {
                 recyclerModels = JSONArray()
+                mRecyclerView.adapter = null
                 setupFilters()
-                loadData(filters=filters!!)
+                loadData(filters=filters)
                 setRecycleViewScrollListener()
                 return false
             }

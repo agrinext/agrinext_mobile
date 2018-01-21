@@ -2,11 +2,13 @@ package org.agrinext.agrimobile.Android
 
 import android.R
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.find
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.ArrayList
@@ -36,7 +38,12 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
         // Get list_item (and other fields) from ListItemUI
         val spinner: Spinner = itemView.find(FiltersItemUI.Companion.Ids.docFieldSpinner)
         // Bind values to name and other fields above
+
+        val bRemoveFilter = itemView.find<Button>(FiltersItemUI.Companion.Ids.removeFilter)
+
         fun bind(filtersArray: JSONArray?, fieldsArray: JSONArray) {
+
+            Log.d("filtersArray", filtersArray.toString())
             var list = ArrayList<String>().apply {
                 add(context.resources.getString(org.agrinext.agrimobile.R.string.sort_name))
                 add(context.resources.getString(org.agrinext.agrimobile.R.string.last_modified_on))
@@ -63,6 +70,7 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         var p = position
         while(filterList.length() < p){
             p -= filterList.length()
@@ -77,6 +85,13 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
             }
         }
         val filtersArray = filterList.getJSONArray(p)
+
+        holder!!.bRemoveFilter.onClick {
+            filterList.remove(p)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position,filterList.length())
+        }
+
         holder!!.bind(filtersArray, fieldsArray)
     }
 }

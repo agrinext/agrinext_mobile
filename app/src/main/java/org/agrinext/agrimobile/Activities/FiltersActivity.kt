@@ -1,5 +1,7 @@
 package org.agrinext.agrimobile.Activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -25,9 +27,15 @@ class FiltersActivity : BaseCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filters)
 
-        //set doctype and meta
+        // set doctype and meta
         if(intent.hasExtra(DOCTYPE)){
             setupDocType(intent.getStringExtra(DOCTYPE))
+        }
+
+        // set filters
+        if(intent.hasExtra(ListingActivity.KEY_FILTERS)) {
+            this.filters = JSONArray(intent.extras.getString(ListingActivity.KEY_FILTERS))
+            recyclerModels = filters
         }
 
         mRecyclerView = findViewById(R.id.filter_recycler_view)
@@ -43,8 +51,7 @@ class FiltersActivity : BaseCompatActivity() {
         mRecyclerView.setHasFixedSize(true)
 
         bAddFilter.onClick {
-            var jsonArray = JSONArray()
-            recyclerModels.put(jsonArray)
+            recyclerModels.put(JSONArray())
             recyclerAdapter!!.notifyItemInserted(recyclerModels.length() - 1)
         }
 

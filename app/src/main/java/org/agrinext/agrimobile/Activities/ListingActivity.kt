@@ -125,7 +125,10 @@ open class ListingActivity : Fragment() {
                 return true
             }
             R.id.action_filters -> {
-                startActivity<FiltersActivity>(DOCTYPE to this.doctype!!)
+                startActivity<FiltersActivity>(
+                        DOCTYPE to this.doctype!!,
+                        KEY_FILTERS to this.filters.toString()
+                )
                 return true
             }
             else -> return false

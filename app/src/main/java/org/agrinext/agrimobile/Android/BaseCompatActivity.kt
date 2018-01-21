@@ -89,7 +89,6 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
         if (resultCode == AppCompatActivity.RESULT_OK) {
             when (requestCode) {
                 SHOW_REQUEST -> {
-                    Log.d("DocTypeActRes", data?.extras?.getString(DOCTYPE)!!)
                     setupDocType(data?.extras?.getString(DOCTYPE)!!)
                 }
             }

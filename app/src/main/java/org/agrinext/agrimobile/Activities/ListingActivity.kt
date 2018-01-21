@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_listing.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
+import org.json.JSONException
 
 
 open class ListingActivity : Fragment() {
@@ -187,8 +188,12 @@ open class ListingActivity : Fragment() {
             add(getString(R.string.created_on))
             add(getString(R.string.most_used))
         }
-
-        val fields = doctypeMetaJson.getJSONArray("fields")
+        var fields = JSONArray()
+        try {
+            fields = doctypeMetaJson.getJSONArray("fields")
+        }catch (e: JSONException) {
+            fields = JSONArray()
+        }
         for (i in 0 until fields.length() -1 ){
             val bold = fields.getJSONObject(i).getInt("bold")
             val reqd = fields.getJSONObject(i).getInt("reqd")
@@ -250,7 +255,12 @@ open class ListingActivity : Fragment() {
         // set order
         val sortSpinner = activity.find<Spinner>(R.id.spinner)
         val spinnerLabel = sortSpinner.selectedItem.toString()
-        val fields = doctypeMetaJson.getJSONArray("fields")
+        var fields = JSONArray()
+        try {
+            fields = doctypeMetaJson.getJSONArray("fields")
+        } catch (e: JSONException) {
+            fields = JSONArray()
+        }
 
         var spinnerField = "modified"
 

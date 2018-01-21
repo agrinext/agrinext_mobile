@@ -1,7 +1,6 @@
 package org.agrinext.agrimobile.Android
 
 import android.app.Activity
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
-import org.agrinext.agrimobile.Activities.FormGeneratorActivity
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.find
@@ -23,10 +21,16 @@ import java.nio.file.Files.size
  * Created by revant on 28/12/17.
  */
 
-class ListViewAdapter(var doc_list:JSONArray, var context: Activity): RecyclerView.Adapter<ListViewAdapter.ViewHolder>(), Filterable {
+class ListViewAdapter(var doc_list:JSONArray): RecyclerView.Adapter<ListViewAdapter.ViewHolder>(), Filterable {
     fun setLoadDataCallback() {
 
     }
+
+    private var mCLickListener: View.OnClickListener? = null
+    fun setOnClickListener(listener: View.OnClickListener) {
+        mCLickListener = listener
+    }
+
     val immutable_doc_list = doc_list
     override fun getFilter(): Filter {
         return object : Filter() {
@@ -97,8 +101,6 @@ class ListViewAdapter(var doc_list:JSONArray, var context: Activity): RecyclerVi
         val jsonObject = doc_list.getJSONObject(p)
         holder!!.bind(jsonObject)
 
-        holder.itemView.setOnClickListener() {
-            context.startActivity(Intent(context, FormGeneratorActivity::class.java))
-        }
+        holder.itemView.setOnClickListener(mCLickListener)
     }
 }

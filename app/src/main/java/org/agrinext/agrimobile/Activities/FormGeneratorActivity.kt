@@ -16,13 +16,12 @@ class FormGeneratorActivity : BaseCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.doctype = intent.extras.get("DocType").toString()
 
         FormGeneraterUI(JSONObject(), JSONObject()).setContentView(this)
     }
 
     override fun onBackPressed() {
-
         finish()
-
     }
 }

@@ -28,7 +28,7 @@ import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 
 
-open class ListingActivity : Fragment() {
+open class ListingActivity : Fragment(), View.OnClickListener {
 
     internal lateinit var mRecyclerView: RecyclerView
     var recyclerAdapter: ListViewAdapter? = null
@@ -48,6 +48,12 @@ open class ListingActivity : Fragment() {
         val KEY_FILTERS = "filters"
         val SET_DOCTYPE = 400
         val SET_DOCTYPE_FILTERS = 401
+    }
+
+    override fun onClick(view: View?) {
+        var intent = Intent(activity, FormGeneratorActivity::class.java)
+        intent.putExtra("DocType", this.doctype)
+        startActivity(intent)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -291,7 +297,8 @@ open class ListingActivity : Fragment() {
                     recyclerAdapter!!.notifyDataSetChanged()
                 } else if (page == null) {
                     // specify and add an adapter
-                    recyclerAdapter = ListViewAdapter(recyclerModels, activity)
+                    recyclerAdapter = ListViewAdapter(recyclerModels)
+                    recyclerAdapter!!.setOnClickListener(this@ListingActivity)
 
                     if (mRecyclerView.adapter == null)
                         mRecyclerView.adapter = recyclerAdapter

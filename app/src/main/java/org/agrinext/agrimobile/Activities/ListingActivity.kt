@@ -64,7 +64,7 @@ open class ListingActivity : Fragment() {
 
         setupView()
 
-        setupSortSpinner()
+//        setupSortSpinner()
 
         setupSortOrder()
 
@@ -159,8 +159,12 @@ open class ListingActivity : Fragment() {
         val doctypeMetaString = pref.getString(keyDocTypeMeta, null)
         if (doctypeMetaString != null){
             this.doctypeMetaJson = JSONObject(doctypeMetaString)
+            setupSortSpinner()
         } else {
             FrappeClient(activity).retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
+            android.os.Handler().postDelayed(
+                    { setupDocType() },
+                    500)
         }
     }
 

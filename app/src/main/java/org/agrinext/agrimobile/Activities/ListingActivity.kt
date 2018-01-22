@@ -73,7 +73,7 @@ open class ListingActivity : Fragment(), View.OnClickListener {
 
         setupView()
 
-//        setupSortSpinner()
+        // setupSortSpinner()
 
         setupSortOrder()
 
@@ -363,6 +363,7 @@ open class ListingActivity : Fragment(), View.OnClickListener {
                     recyclerModels = JSONArray()
                     mRecyclerView.adapter = null
                     loadData(filters = filters!!)
+                    setRecycleViewScrollListener()
                 }
         )
     }

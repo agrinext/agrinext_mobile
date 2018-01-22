@@ -41,19 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.UserProfile"
-            android:parentActivityName=".Activities.MainActivity" />
-        <activity
-            android:name=".Activities.ListingActivity"
-            android:parentActivityName=".Activities.MainActivity" />
-        <activity
-            android:name=".Activities.ProduceActivity"
-            android:parentActivityName=".Activities.MainActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-        </activity>
         <activity android:name=".Activities.FormGeneratorActivity"></activity>
         <activity android:name=".Activities.FiltersActivity"></activity>
     </application>

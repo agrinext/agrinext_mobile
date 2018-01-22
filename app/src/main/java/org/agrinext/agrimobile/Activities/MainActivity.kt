@@ -80,10 +80,10 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_market -> {
-                setupFragment(ListingActivity())
+                setupFragment(MarketActivity())
             }
             R.id.nav_sellers -> {
-                setupFragment(ListingActivity())
+                setupFragment(UsersActivity())
             }
             R.id.nav_my_profile -> {
                 setupFragment(UserProfile())
@@ -95,10 +95,10 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
                 shareInvite()
             }
             R.id.nav_locations -> {
-                setupFragment(ListingActivity())
+                setupFragment(LocationActivity())
             }
             R.id.nav_items -> {
-                setupFragment(ListingActivity())
+                setupFragment(ItemActivity())
             }
         }
 

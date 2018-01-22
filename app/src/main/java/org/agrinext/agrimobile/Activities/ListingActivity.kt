@@ -13,6 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import android.content.Intent
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -41,6 +42,7 @@ open class ListingActivity : Fragment(), View.OnClickListener {
     var sortOrder: String? = "desc"
     var doctype: String? = null
     var doctypeMetaJson = JSONObject()
+    var swipeRefresh: SwipeRefreshLayout? = null
 
     companion object {
         val DOCTYPE_META = "DOCTYPE_META"
@@ -75,6 +77,8 @@ open class ListingActivity : Fragment(), View.OnClickListener {
         setupSortOrder()
 
         setRecycleViewScrollListener()
+
+        setupSwipeRefresh()
     }
 
 
@@ -305,6 +309,8 @@ open class ListingActivity : Fragment(), View.OnClickListener {
                 }
                 loadServerData = true
                 progressBar?.visibility = View.GONE
+                if(swipeRefresh!!.isRefreshing)
+                    swipeRefresh!!.setRefreshing(false)
             }
 
             override fun onErrorResponse(s: String) {
@@ -335,5 +341,16 @@ open class ListingActivity : Fragment(), View.OnClickListener {
             loadData(filters = filters!!)
             setRecycleViewScrollListener()
         }
+    }
+
+    fun setupSwipeRefresh() {
+        swipeRefresh = activity.find<SwipeRefreshLayout>(R.id.swipeRefresh)
+        swipeRefresh!!.setOnRefreshListener(
+                SwipeRefreshLayout.OnRefreshListener {
+                    recyclerModels = JSONArray()
+                    mRecyclerView.adapter = null
+                    loadData(filters = filters!!)
+                }
+        )
     }
 }

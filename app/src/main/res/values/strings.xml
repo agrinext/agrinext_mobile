@@ -42,6 +42,7 @@
     <string name="sort_name">Name</string>
     <string name="filters">Filters</string>
     <string name="actionSort">Sort</string>
+    <string name="shareData">Check out AgriNext, a Central Hub to connect all farmers.</string>
 
     <!-- OAUTH -->
     <string name="package_name">org.agrinext.agrimobile</string>

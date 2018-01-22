@@ -13,6 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import android.content.Intent
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -28,7 +29,7 @@ import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 
 
-open class ListingActivity : Fragment() {
+open class ListingActivity : Fragment(), View.OnClickListener {
 
     internal lateinit var mRecyclerView: RecyclerView
     var recyclerAdapter: ListViewAdapter? = null
@@ -41,6 +42,7 @@ open class ListingActivity : Fragment() {
     var sortOrder: String? = "desc"
     var doctype: String? = null
     var doctypeMetaJson = JSONObject()
+    var swipeRefresh: SwipeRefreshLayout? = null
 
     companion object {
         val DOCTYPE_META = "DOCTYPE_META"
@@ -48,6 +50,12 @@ open class ListingActivity : Fragment() {
         val KEY_FILTERS = "filters"
         val SET_DOCTYPE = 400
         val SET_DOCTYPE_FILTERS = 401
+    }
+
+    override fun onClick(view: View?) {
+        var intent = Intent(activity, FormGeneratorActivity::class.java)
+        intent.putExtra("DocType", this.doctype)
+        startActivity(intent)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,11 +72,13 @@ open class ListingActivity : Fragment() {
 
         setupView()
 
-        setupSortSpinner()
+//        setupSortSpinner()
 
         setupSortOrder()
 
         setRecycleViewScrollListener()
+
+        setupSwipeRefresh()
     }
 
 
@@ -159,8 +169,12 @@ open class ListingActivity : Fragment() {
         val doctypeMetaString = pref.getString(keyDocTypeMeta, null)
         if (doctypeMetaString != null){
             this.doctypeMetaJson = JSONObject(doctypeMetaString)
+            setupSortSpinner()
         } else {
             FrappeClient(activity).retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
+            android.os.Handler().postDelayed(
+                    { setupDocType() },
+                    500)
         }
     }
 
@@ -287,13 +301,16 @@ open class ListingActivity : Fragment() {
                     recyclerAdapter!!.notifyDataSetChanged()
                 } else if (page == null) {
                     // specify and add an adapter
-                    recyclerAdapter = ListViewAdapter(recyclerModels, activity)
+                    recyclerAdapter = ListViewAdapter(recyclerModels)
+                    recyclerAdapter!!.setOnClickListener(this@ListingActivity)
 
                     if (mRecyclerView.adapter == null)
                         mRecyclerView.adapter = recyclerAdapter
                 }
                 loadServerData = true
                 progressBar?.visibility = View.GONE
+                if(swipeRefresh!!.isRefreshing)
+                    swipeRefresh!!.setRefreshing(false)
             }
 
             override fun onErrorResponse(s: String) {
@@ -324,5 +341,16 @@ open class ListingActivity : Fragment() {
             loadData(filters = filters!!)
             setRecycleViewScrollListener()
         }
+    }
+
+    fun setupSwipeRefresh() {
+        swipeRefresh = activity.find<SwipeRefreshLayout>(R.id.swipeRefresh)
+        swipeRefresh!!.setOnRefreshListener(
+                SwipeRefreshLayout.OnRefreshListener {
+                    recyclerModels = JSONArray()
+                    mRecyclerView.adapter = null
+                    loadData(filters = filters!!)
+                }
+        )
     }
 }

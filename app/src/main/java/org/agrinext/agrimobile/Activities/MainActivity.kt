@@ -3,6 +3,7 @@ package org.agrinext.agrimobile.Activities
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Intent
+import android.content.Intent.createChooser
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.design.widget.NavigationView
@@ -91,7 +92,7 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
                 setupFragment(ProduceActivity())
             }
             R.id.nav_invite -> {
-                share("https://agrinext.org")
+                shareInvite()
             }
             R.id.nav_locations -> {
                 setupFragment(ListingActivity())
@@ -112,6 +113,16 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
         ft.replace(R.id.screen_area, fragment)
         ft.commit()
     }
+
+    fun shareInvite() {
+        var shareData = getString(R.string.shareData) + " https://agrinext.org"
+        val sendIntent = Intent()
+        sendIntent.action = Intent.ACTION_SEND
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareData)
+        sendIntent.type = "text/plain"
+        startActivity(createChooser(sendIntent, "Share"))
+    }
+
     fun fireUp() {
         mAccountManager = AccountManager.get(this)
         accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)

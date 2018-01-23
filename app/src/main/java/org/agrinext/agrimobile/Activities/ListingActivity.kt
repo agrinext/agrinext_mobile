@@ -12,6 +12,7 @@ import org.agrinext.agrimobile.R
 import org.json.JSONArray
 import org.json.JSONObject
 import android.content.Intent
+import android.content.SharedPreferences
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
@@ -201,6 +202,8 @@ open class ListingActivity : Fragment(), View.OnClickListener {
             add(getString(R.string.sort_name))
             add(getString(R.string.created_on))
             add(getString(R.string.most_used))
+            add(getString(R.string.created_by))
+            add(getString(R.string.modified_by))
         }
         var fields = JSONArray()
         try {
@@ -290,6 +293,8 @@ open class ListingActivity : Fragment(), View.OnClickListener {
             getString(R.string.sort_name) -> spinnerField="name"
             getString(R.string.created_on) -> spinnerField="creation"
             getString(R.string.most_used) -> spinnerField="idx"
+            getString(R.string.created_by) -> spinnerField="owner"
+            getString(R.string.modified_by) -> spinnerField="modified_by"
         }
 
         order_by = "$spinnerField+$sortOrder"

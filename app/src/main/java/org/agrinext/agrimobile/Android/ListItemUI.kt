@@ -19,7 +19,7 @@ class ListItemUI : AnkoComponent<ViewGroup> {
         // UI list item
         val out = with(ui){
             linearLayout {
-                lparams(width = matchParent, height = dip(200))
+                lparams(width = matchParent, height = dip(100))
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.CENTER
                 cardView {
@@ -28,7 +28,7 @@ class ListItemUI : AnkoComponent<ViewGroup> {
                         textView {
                             gravity = Gravity.LEFT
                             id = Ids.itemType
-                            text = "DocType"
+                            text = "Name"
                         }.lparams(width = matchParent, height = wrapContent)
 
                         textView {
@@ -37,7 +37,7 @@ class ListItemUI : AnkoComponent<ViewGroup> {
                             textAppearance = R.style.Base_TextAppearance_AppCompat_Body1
                         }.lparams(width = matchParent, height = wrapContent)
                     }.lparams(width = matchParent, height = matchParent)
-                }.lparams(height = dip(190), width = matchParent)
+                }.lparams(height = dip(90), width = matchParent)
             }
         }
         return out

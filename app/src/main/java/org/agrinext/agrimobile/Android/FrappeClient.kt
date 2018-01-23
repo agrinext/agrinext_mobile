@@ -8,6 +8,10 @@ import com.github.scribejava.core.model.Verb
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import com.mntechnique.otpmobileauth.auth.AuthRequest
 import com.mntechnique.otpmobileauth.auth.RetrieveAuthTokenTask
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
@@ -110,6 +114,21 @@ class FrappeClient(ctx: Context){
         ).execute()
     }
 
+    suspend fun executeSuspendedRequest(request: OAuthRequest, callback: AuthReqCallback) = async(UI) {
+        try {
+            async(CommonPool){
+                RetrieveAuthTokenTask(
+                        context = ctx,
+                        callback = getAuthReqCallback(request, callback)
+                ).execute()
+            }.await()
+        } catch (e:Exception) {
+            Log.e("suspendedRequest", "Error", e)
+        } finally {
+            Log.d("suspendedRequest", "finally")
+        }
+    }
+
     fun retrieveDocTypeMeta(editor: SharedPreferences.Editor, key: String, doctype: String?) {
 
         val request = OAuthRequest(Verb.GET, "${getServerURL()}/api/method/agrinext.api.get_meta?doctype=${doctype}")
@@ -125,8 +144,9 @@ class FrappeClient(ctx: Context){
             }
 
         }
-
-        executeRequest(request, callback)
+        runBlocking {
+            executeSuspendedRequest(request, callback)
+        }
     }
 
 }

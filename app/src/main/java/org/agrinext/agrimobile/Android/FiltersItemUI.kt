@@ -50,10 +50,11 @@ class FiltersItemUI: AnkoComponent<ViewGroup> {
                             val spinnerAdapter = ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, list)
                             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                             adapter = spinnerAdapter
+                            id = Ids.expressionSpinner
                         }
 
                         editText {
-
+                            id = Ids.filterValue
                         }
 
                         linearLayout {
@@ -61,15 +62,15 @@ class FiltersItemUI: AnkoComponent<ViewGroup> {
                             weightSum = 10F
                             space {
 
-                            }.lparams(weight = 9F)
-
-                            button {
-                                id = Ids.saveFilter
-                            }.lparams(weight = 0.5F).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0)
+                            }.lparams(
+                                weight = 9.5F
+                            )
 
                             button {
                                 id = Ids.removeFilter
-                            }.lparams(weight = 0.5F).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_close, 0, 0, 0)
+                                backgroundResource = android.R.color.transparent
+                            }.lparams(weight = 0.5F, width = matchParent, height = wrapContent)
+                                    .setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_close, 0, 0, 0)
                         }
                     }.lparams(width = matchParent, height = matchParent)
                 }.lparams(height = dip(190), width = matchParent)
@@ -85,6 +86,8 @@ class FiltersItemUI: AnkoComponent<ViewGroup> {
             val docFieldSpinner = 2
             val saveFilter = 3
             val removeFilter = 4
+            val expressionSpinner = 5
+            val filterValue = 6
         }
     }
 }

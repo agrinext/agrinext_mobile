@@ -144,9 +144,8 @@ class FrappeClient(ctx: Context){
             }
 
         }
-        runBlocking {
-            executeSuspendedRequest(request, callback)
-        }
+        executeRequest(request, callback)
+
     }
 
 }

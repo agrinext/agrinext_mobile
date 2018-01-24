@@ -12,7 +12,6 @@ import org.agrinext.agrimobile.R
 import org.json.JSONArray
 import org.json.JSONObject
 import android.content.Intent
-import android.content.SharedPreferences
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
@@ -26,8 +25,10 @@ import org.agrinext.agrimobile.Android.*
 import android.view.MenuInflater
 import kotlinx.android.synthetic.main.activity_listing.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.uiThread
 import org.json.JSONException
 
 
@@ -176,10 +177,12 @@ open class ListingActivity : Fragment(), View.OnClickListener {
             this.doctypeMetaJson = JSONObject(doctypeMetaString)
             setupSortSpinner()
         } else {
-            FrappeClient(activity).retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
-            android.os.Handler().postDelayed(
-                    { setupDocType() },
-                    500)
+            doAsync {
+                FrappeClient(activity).retrieveDocTypeMeta(editor, keyDocTypeMeta, doctype)
+                uiThread {
+                    setupDocType()
+                }
+            }
         }
     }
 

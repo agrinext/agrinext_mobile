@@ -11,6 +11,7 @@ import android.util.Log
 import org.agrinext.agrimobile.Activities.ListingActivity
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.alert
+import org.json.JSONArray
 import org.json.JSONObject
 
 open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.ConnectivityReceiverListener {
@@ -19,6 +20,7 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
 
     var docMeta: JSONObject? = null
     var doctype: String? = null
+    var filters: JSONArray? = null
 
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         checkNetworkState()
@@ -32,6 +34,7 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
                 override fun doInBackground(vararg params: Void?): Boolean{
                     return frappeClient.checkConnection()
                 }
+
                 override fun onPostExecute(result: Boolean) {
                     if (!result){
                         showAlert()
@@ -84,12 +87,18 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
         }
     }
 
+    open fun setupFilters(filters:JSONArray) {
+        Log.d("Filters", filters.toString())
+        this.filters = filters
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == AppCompatActivity.RESULT_OK) {
             when (requestCode) {
                 SHOW_REQUEST -> {
                     setupDocType(data?.extras?.getString(DOCTYPE)!!)
+                    setupFilters(JSONArray(data?.extras?.getString(FILTER)!!))
                 }
             }
         }
@@ -98,5 +107,6 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
     companion object {
         val SHOW_REQUEST = 500
         val DOCTYPE = "doctype"
+        val FILTER = "filter"
     }
 }

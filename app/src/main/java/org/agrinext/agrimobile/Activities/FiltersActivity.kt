@@ -21,7 +21,6 @@ class FiltersActivity : BaseCompatActivity() {
     internal lateinit var mRecyclerView: RecyclerView
     var recyclerAdapter: FilterViewAdapter? = null
     var recyclerModels = JSONArray()
-    var filters: JSONArray = JSONArray()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +34,7 @@ class FiltersActivity : BaseCompatActivity() {
         // set filters
         if(intent.hasExtra(ListingActivity.KEY_FILTERS)) {
             this.filters = JSONArray(intent.extras.getString(ListingActivity.KEY_FILTERS))
-            recyclerModels = filters
+            recyclerModels = filters as JSONArray
         }
 
         mRecyclerView = findViewById(R.id.filter_recycler_view)
@@ -51,13 +50,30 @@ class FiltersActivity : BaseCompatActivity() {
         mRecyclerView.setHasFixedSize(true)
 
         bAddFilter.onClick {
-            recyclerModels.put(JSONArray())
+            recyclerModels.put(JSONArray().put("name").put("=").put(""))
             recyclerAdapter!!.notifyItemInserted(recyclerModels.length() - 1)
         }
 
         bSetFilter.onClick {
-            Log.d("bSetFilters", recyclerModels.toString())
-            toast("Set Filters!")
+            var setFilter = false
+            Log.d("setFilter", recyclerModels.toString())
+            for(i in 0 until recyclerModels.length()) {
+                Log.d("bSetFilters", recyclerModels.getJSONArray(i).toString())
+                if(recyclerModels.getJSONArray(i).length() == 0) {
+                    Log.d("bSetFilters", recyclerModels.toString())
+                    toast(getString(R.string.please_set_filter))
+                    setFilter = false
+                } else {
+                    setFilter = true
+                }
+            }
+            if(setFilter || recyclerModels.length() == 0){
+                val results = Intent()
+                results.putExtra(ListingActivity.KEY_FILTERS, recyclerModels.toString())
+                results.putExtra(ListingActivity.KEY_DOCTYPE, doctype)
+                setResult(Activity.RESULT_OK, results)
+                finish()
+            }
         }
     }
 }

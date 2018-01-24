@@ -2,6 +2,8 @@ package org.agrinext.agrimobile.Android
 
 import android.R
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,8 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.json.JSONArray
 import org.json.JSONObject
 import android.widget.Spinner
+import org.agrinext.agrimobile.Frappe.FieldUtils
+import org.jetbrains.anko.sdk25.coroutines.onItemClick
 import kotlin.collections.ArrayList
 
 class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAdapter.ViewHolder>() {
@@ -145,6 +149,43 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
             notifyItemRemoved(position)
             notifyItemRangeChanged(position,filterList.length())
         }
+
+        holder.spinnerField.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
+                val fieldname = FieldUtils().getFieldnameFromLabel(holder.context, docMeta, holder.spinnerField.selectedItem.toString())
+                filterList.getJSONArray(p).put(0,fieldname)
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>) {
+                // Nothing selected
+            }
+
+        }
+        holder.spinnerExpression.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
+                val expression = FieldUtils().getExpressionFromLabel(holder.spinnerExpression.selectedItem.toString())
+                filterList.getJSONArray(p).put(1,expression)
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>) {
+                // Nothing selected
+            }
+
+        }
+        holder.fieldsValue.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                filterList.getJSONArray(p).put(2,s.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+        })
 
         holder!!.bind(filtersArray, fieldsArray)
     }

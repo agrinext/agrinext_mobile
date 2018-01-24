@@ -26,7 +26,8 @@ import android.view.MenuInflater
 import kotlinx.android.synthetic.main.activity_listing.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.support.v4.startActivity
+import org.jetbrains.anko.support.v4.intentFor
+import org.jetbrains.anko.support.v4.startActivityForResult
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import org.json.JSONException
@@ -138,10 +139,10 @@ open class ListingActivity : Fragment(), View.OnClickListener {
                 return true
             }
             R.id.action_filters -> {
-                startActivity<FiltersActivity>(
-                        DOCTYPE to this.doctype!!,
-                        KEY_FILTERS to this.filters.toString()
-                )
+                val mIntent = intentFor<FiltersActivity>()
+                mIntent.putExtra(DOCTYPE, this.doctype)
+                mIntent.putExtra(KEY_FILTERS, this.filters.toString())
+                startActivityForResult(mIntent,SET_DOCTYPE_FILTERS)
                 return true
             }
             else -> return false
@@ -159,6 +160,11 @@ open class ListingActivity : Fragment(), View.OnClickListener {
                 if (resultCode == Activity.RESULT_OK && data != null){
                     this.doctype = data?.extras?.getString(KEY_DOCTYPE)
                     this.filters = JSONArray(data?.extras?.getString(KEY_FILTERS))
+
+                    recyclerModels = JSONArray()
+                    mRecyclerView.adapter = null
+                    loadData(filters = filters!!)
+                    setRecycleViewScrollListener()
                 }
             }
         }

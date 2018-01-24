@@ -57,5 +57,6 @@
     <string name="guest_api_key">dd35bcc1e134e69e7c318c0748622d19ecf025e0ef5492ddef3f5f77</string>
     <string name="created_by">Created By</string>
     <string name="modified_by">Modified By</string>
+    <string name="please_set_filter">Please set filter</string>
 
 </resources>

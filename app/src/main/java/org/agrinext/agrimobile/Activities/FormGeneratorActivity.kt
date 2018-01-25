@@ -3,7 +3,9 @@ package org.agrinext.agrimobile.Activities
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import org.agrinext.agrimobile.Android.*
+import org.agrinext.agrimobile.Frappe.DocField
 import org.agrinext.agrimobile.R
 import org.json.JSONArray
 
@@ -12,7 +14,7 @@ class FormGeneratorActivity : BaseCompatActivity() {
 
     internal lateinit var mRecyclerView: RecyclerView
     var recyclerAdapter: FormViewAdapter? = null
-    var recyclerModels = JSONArray()
+    var recyclerModels = ArrayList<DocField>()
     var docname: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,8 +27,12 @@ class FormGeneratorActivity : BaseCompatActivity() {
             this.docname = intent.getStringExtra("DocName")
         }
 
-        for(i in 1..20) {
-            recyclerModels.put(i)
+        val fields = docMeta?.getJSONArray("fields")!!
+        var pushDocMeta: DocField
+        for(i in 0 until fields.length()-1) {
+            pushDocMeta = DocField(fields.getJSONObject(i))
+            if(pushDocMeta.fieldname!=null)
+                recyclerModels.add(pushDocMeta)
         }
 
 

@@ -4,22 +4,24 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import org.agrinext.agrimobile.Frappe.DocField
 import org.jetbrains.anko.*
 import org.jetbrains.anko.cardview.v7.cardView
+import org.json.JSONArray
 
-class FormGeneraterUI: AnkoComponent<ViewGroup> {
+class FormGeneraterUI(docMeta: DocField): AnkoComponent<ViewGroup> {
 
 //    val doc = doc
-//    val docMeta = docMeta
+    val docMeta = docMeta
 
     override fun createView(ui: AnkoContext<ViewGroup>): View {
 
         val out = with(ui) {
             cardView {
-                lparams(width= matchParent, height=dip(70))
+                lparams(width= matchParent, height=dip(50))
 
                 linearLayout() {
-                    lparams(width= matchParent, height=matchParent)
+                    lparams(width = matchParent, height = matchParent)
                     weightSum = 1f
                     orientation = LinearLayout.HORIZONTAL
 
@@ -28,19 +30,35 @@ class FormGeneraterUI: AnkoComponent<ViewGroup> {
                         text = "FieldName"
                         textSize = dip(8).toFloat()
                         gravity = Gravity.CENTER
-                    }.lparams {
-                        weight = 0.30f //not support value
+                    }.lparams(width = dip(0)) {
+                        weight = 0.40f //not support value
                     }
 
-                    editText {
-                        id = Ids.fieldValue
-                        setText("FieldValue")
-                        textSize = dip(8).toFloat()
-                        inputType = 0
-                        backgroundResource = android.R.color.transparent
-                    }.lparams {
-                        weight = 0.70f //not support value
+                    if ((ArrayList<String>().apply {
+                                add("Data")
+                                add("Link")
+                            }).contains(docMeta.fieldtype)) {
+
+                        editText {
+                            id = Ids.fieldValue
+                            setText("FieldValue")
+                            textSize = dip(8).toFloat()
+                            inputType = 0
+                            backgroundResource = android.R.color.transparent
+                        }.lparams(width = dip(0)) {
+                            weight = 0.60f //not support value
+                        }
+                    } else {
+                        textView {
+                            id = Ids.fieldValue
+                            text = "FieldName"
+                            textSize = dip(8).toFloat()
+                            gravity = Gravity.CENTER
+                        }.lparams(width = dip(0)) {
+                            weight = 0.40f //not support value
+                        }
                     }
+
 
                 }
             }

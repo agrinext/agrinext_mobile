@@ -28,16 +28,13 @@ class FormGeneraterUI(docMeta: DocField): AnkoComponent<ViewGroup> {
                     textView {
                         id = Ids.fieldName
                         text = "FieldName"
-                        textSize = dip(8).toFloat()
+                        textSize = dip(7).toFloat()
                         gravity = Gravity.CENTER
                     }.lparams(width = dip(0)) {
                         weight = 0.40f //not support value
                     }
 
-                    if ((ArrayList<String>().apply {
-                                add("Data")
-                                add("Link")
-                            }).contains(docMeta.fieldtype)) {
+                    if (docMeta.fieldtype=="Data" || docMeta.fieldtype=="Link") {
 
                         editText {
                             id = Ids.fieldValue
@@ -48,14 +45,20 @@ class FormGeneraterUI(docMeta: DocField): AnkoComponent<ViewGroup> {
                         }.lparams(width = dip(0)) {
                             weight = 0.60f //not support value
                         }
+                    } else if(docMeta.fieldtype=="Check"){
+                        checkBox {
+                            id = Ids.fieldValue
+                            check(true)
+                        }.lparams(width = dip(0)) {
+                            weight = 0.60f //not support value
+                        }
                     } else {
                         textView {
                             id = Ids.fieldValue
                             text = "FieldName"
                             textSize = dip(8).toFloat()
-                            gravity = Gravity.CENTER
                         }.lparams(width = dip(0)) {
-                            weight = 0.40f //not support value
+                            weight = 0.60f //not support value
                         }
                     }
 

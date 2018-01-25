@@ -1,27 +1,26 @@
 package org.agrinext.agrimobile.Android
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import org.agrinext.agrimobile.Frappe.DocField
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.find
-import org.json.JSONArray
 import org.json.JSONObject
-import org.w3c.dom.Text
-import java.util.*
+import kotlin.collections.ArrayList
 
-class FormViewAdapter(filterList: ArrayList<DocField>) : RecyclerView.Adapter<FormViewAdapter.ViewHolder>() {
-
-    var filterList = filterList
+class FormViewAdapter(metaList: ArrayList<DocField>) : RecyclerView.Adapter<FormViewAdapter.ViewHolder>() {
+    var metaList = metaList
     var docMeta = JSONObject()
-    var position: Int = -1
+    var position: Int = -1 // help pass position for which view is being pushed into adapter
 
-    constructor(filterList: ArrayList<DocField>, docMeta: JSONObject) : this(filterList) {
-        this.filterList = filterList
+    companion object {
+        var holderArray = ArrayList<FormViewAdapter.ViewHolder>() // hold each row's binder
+    }
+
+    constructor(metaList: ArrayList<DocField>, docMeta: JSONObject) : this(metaList) {
+        this.metaList = metaList
         this.docMeta = docMeta
     }
 
@@ -31,12 +30,12 @@ class FormViewAdapter(filterList: ArrayList<DocField>) : RecyclerView.Adapter<Fo
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): FormViewAdapter.ViewHolder {
-        return FormViewAdapter.ViewHolder(FormGeneraterUI(filterList[getCurrentPosition()]).createView(AnkoContext.create(parent!!.context, parent)))
+        return FormViewAdapter.ViewHolder(FormGeneraterUI(metaList[getCurrentPosition()]).createView(AnkoContext.create(parent!!.context, parent)))
     }
 
     override fun getItemCount(): Int {
         // return listing size
-        return filterList.size
+        return metaList.size
     }
 
     fun getCurrentPosition(): Int {
@@ -44,17 +43,12 @@ class FormViewAdapter(filterList: ArrayList<DocField>) : RecyclerView.Adapter<Fo
     }
 
     override fun onBindViewHolder(holder: FormViewAdapter.ViewHolder, position: Int) {
-        this.position = position
-        var jsonObject = filterList[position]
-        holder.label.text = jsonObject.label
-        val viewType = holder.value.javaClass.simpleName
-        if(viewType == "EditText") {
-            val value = holder.value as EditText
-            value.setText("Edit Value")
+        var p = position
+        while(metaList.size < p){
+            p -= metaList.size
         }
-        else {
-            val value = holder.value as TextView
-            value.text = "Non Edit Value"
-        }
+
+        this.position = p
+        holderArray!!.add(holder) // populate controller for each row generated
     }
 }

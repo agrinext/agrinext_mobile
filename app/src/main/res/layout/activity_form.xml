@@ -14,12 +14,6 @@
         android:gravity="end"
         android:orientation="vertical">
 
-        <!--<LinearLayout-->
-        <!--android:id="@+id/linear1"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="vertical">-->
-
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="match_parent"
@@ -28,14 +22,22 @@
             android:minHeight="200dp"
             app:srcCompat="@drawable/ic_menu_manage" />
 
-        <!--</LinearLayout>-->
+        <TextView
+            android:id="@+id/docname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:paddingLeft="15dp"/>
 
-        <!--<LinearLayout-->
-        <!--android:id="@+id/linear3"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:gravity="end"-->
-        <!--android:orientation="vertical">-->
+        <ProgressBar
+            android:id="@+id/delay_progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:indeterminate="false"
+            android:visibility="visible"
+            android:backgroundTint="@android:color/transparent"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/form_recycler_view"
@@ -44,8 +46,6 @@
             tools:layout_editor_absoluteY="60dp">
 
         </android.support.v7.widget.RecyclerView>
-
-        <!--</LinearLayout>-->
 
     </LinearLayout>
 </ScrollView>

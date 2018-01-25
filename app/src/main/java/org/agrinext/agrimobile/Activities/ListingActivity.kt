@@ -57,8 +57,11 @@ open class ListingActivity : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
+        var itemPosition = mRecyclerView.getChildLayoutPosition(view)
+        var value = JSONObject(recyclerModels.get(itemPosition).toString()).get("name")
         var intent = Intent(activity, FormGeneratorActivity::class.java)
         intent.putExtra("DocType", this.doctype)
+        intent.putExtra("DocName", value.toString())
         startActivity(intent)
     }
 

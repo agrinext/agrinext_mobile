@@ -1,37 +1,57 @@
 package org.agrinext.agrimobile.Android
 
 import android.view.Gravity
-import android.widget.Button
-import android.widget.EditText
-import org.agrinext.agrimobile.Activities.FormGeneratorActivity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.json.JSONException
-import org.json.JSONObject
+import org.jetbrains.anko.cardview.v7.cardView
 
-/**
- * Created by revant on 16/1/18.
- */
-class FormGeneraterUI(doc: JSONObject, docMeta:JSONObject): AnkoComponent<FormGeneratorActivity> {
+class FormGeneraterUI: AnkoComponent<ViewGroup> {
 
-    val doc = doc
-    val docMeta = docMeta
+//    val doc = doc
+//    val docMeta = docMeta
 
-    override fun createView(ui: AnkoContext<FormGeneratorActivity>) = with(ui) {
-        verticalLayout {
-            padding = dip(32)
+    override fun createView(ui: AnkoContext<ViewGroup>): View {
 
-            imageView(android.R.drawable.ic_menu_manage).lparams {
-                margin = dip(16)
-                gravity = Gravity.CENTER
-            }
+        val out = with(ui) {
+            cardView {
+                lparams(width= matchParent, height=dip(70))
 
+                linearLayout() {
+                    lparams(width= matchParent, height=matchParent)
+                    weightSum = 1f
+                    orientation = LinearLayout.HORIZONTAL
 
-            button("Error!") {
-                onClick {
-                    throw JSONException("User Thrown Exception!")
+                    textView {
+                        id = Ids.fieldName
+                        text = "FieldName"
+                        textSize = dip(8).toFloat()
+                        gravity = Gravity.CENTER
+                    }.lparams {
+                        weight = 0.30f //not support value
+                    }
+
+                    editText {
+                        id = Ids.fieldValue
+                        setText("FieldValue")
+                        textSize = dip(8).toFloat()
+                        inputType = 0
+                        backgroundResource = android.R.color.transparent
+                    }.lparams {
+                        weight = 0.70f //not support value
+                    }
+
                 }
             }
+        }
+        return out
+    }
+
+    companion object {
+        object Ids {
+            val fieldName = 0
+            val fieldValue = 1
         }
     }
 }

@@ -1,24 +1,47 @@
 package org.agrinext.agrimobile.Activities
 
 import android.os.Bundle
-import org.agrinext.agrimobile.Android.BaseCompatActivity
-import org.agrinext.agrimobile.Android.FormGeneraterUI
-import org.agrinext.agrimobile.Android.FrappeClient
-import org.agrinext.agrimobile.Android.StringUtil
-import org.jetbrains.anko.setContentView
-import org.json.JSONObject
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import org.agrinext.agrimobile.Android.*
+import org.agrinext.agrimobile.R
+import org.json.JSONArray
 
 
 class FormGeneratorActivity : BaseCompatActivity() {
 
+    internal lateinit var mRecyclerView: RecyclerView
+    var recyclerAdapter: FormViewAdapter? = null
+    var recyclerModels = JSONArray()
+    var docname: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.doctype = intent.extras.get("DocType").toString()
+        setContentView(R.layout.activity_form)
 
-        FormGeneraterUI(JSONObject(), JSONObject()).setContentView(this)
+        // set docname and meta
+        if(intent.hasExtra("DocType") && intent.hasExtra("DocName")){
+            setupDocType(intent.getStringExtra("DocType"))
+            this.docname = intent.getStringExtra("DocName")
+        }
+
+        for(i in 1..20) {
+            recyclerModels.put(i)
+        }
+
+
+        mRecyclerView = findViewById(R.id.form_recycler_view)
+
+        val mLayoutManager = LinearLayoutManager(this)
+        mRecyclerView.setLayoutManager(mLayoutManager)
+
+        recyclerAdapter = FormViewAdapter(recyclerModels, docMeta!!)
+        mRecyclerView.adapter = recyclerAdapter
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true)
+
     }
 
     override fun onBackPressed() {

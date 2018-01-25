@@ -43,6 +43,16 @@
     <string name="filters">Filters</string>
     <string name="actionSort">Sort</string>
     <string name="shareData">Check out AgriNext, a Central Hub to connect all farmers.</string>
+    <string name="created_by">Created By</string>
+    <string name="modified_by">Modified By</string>
+    <string name="please_set_filter">Please set filter</string>
+    <string name="labelEqual">Equal</string>
+    <string name="labelLike">Like</string>
+    <string name="labelIn">In</string>
+    <string name="labelNotIn">Not In</string>
+    <string name="labelNotEqual">Not Equal</string>
+    <string name="labelNotLike">Not Like</string>
+    <string name="labelBetween">Between</string>
 
     <!-- OAUTH -->
     <string name="package_name">org.agrinext.agrimobile</string>
@@ -55,8 +65,5 @@
 
     <!-- AgriNext -->
     <string name="guest_api_key">dd35bcc1e134e69e7c318c0748622d19ecf025e0ef5492ddef3f5f77</string>
-    <string name="created_by">Created By</string>
-    <string name="modified_by">Modified By</string>
-    <string name="please_set_filter">Please set filter</string>
 
 </resources>

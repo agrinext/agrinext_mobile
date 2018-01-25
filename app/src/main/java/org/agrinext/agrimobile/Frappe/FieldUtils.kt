@@ -1,6 +1,7 @@
 package org.agrinext.agrimobile.Frappe
 
 import android.content.Context
+import org.agrinext.agrimobile.R
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -57,5 +58,23 @@ class FieldUtils {
         }
 
         return expressionValue
+    }
+    fun getLabelFromExpression(context: Context,expression: String) : String {
+        var label = ""
+        when(expression){
+            "=" -> label = context.getString(R.string.labelEqual)
+            "like" -> label = context.getString(R.string.labelLike)
+            "in" -> label = context.getString(R.string.labelIn)
+            "not in" -> label = context.getString(R.string.labelNotIn)
+            "!=" -> label = context.getString(R.string.labelNotEqual)
+            "not like" -> label = context.getString(R.string.labelNotLike)
+            "between" -> label = context.getString(R.string.labelBetween)
+            ">" -> label = ">"
+            "<" -> label = "<"
+            ">=" -> label = ">="
+            "<=" -> label = "<="
+        }
+
+        return label
     }
 }

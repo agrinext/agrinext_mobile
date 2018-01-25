@@ -4,7 +4,6 @@ import android.R
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -15,7 +14,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import android.widget.Spinner
 import org.agrinext.agrimobile.Frappe.FieldUtils
-import org.jetbrains.anko.sdk25.coroutines.onItemClick
 import kotlin.collections.ArrayList
 
 class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAdapter.ViewHolder>() {
@@ -37,7 +35,7 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
 
         val context = itemView.context
         // Get list_item (and other fields) from ListItemUI
-        val spinnerField: Spinner = itemView.find(FiltersItemUI.Companion.Ids.docFieldSpinner)
+        val spinnerField: Spinner = itemView.find<Spinner>(FiltersItemUI.Companion.Ids.docFieldSpinner)
         // Bind values to name and other fields above
         val spinnerExpression: Spinner = itemView.find(FiltersItemUI.Companion.Ids.expressionSpinner)
 
@@ -46,9 +44,6 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
         val bRemoveFilter = itemView.find<Button>(FiltersItemUI.Companion.Ids.removeFilter)
 
         fun bind(filtersArray: JSONArray?, fieldsArray: JSONArray) {
-
-            Log.d("filtersArray", filtersArray.toString())
-            Log.d("fieldsArray", fieldsArray.toString())
             var list = ArrayList<String>().apply {
                 add(context.resources.getString(org.agrinext.agrimobile.R.string.sort_name))
                 add(context.resources.getString(org.agrinext.agrimobile.R.string.last_modified_on))
@@ -67,15 +62,15 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
                 add("modified_by")
             }
 
-            var fieldName = context.resources.getString(org.agrinext.agrimobile.R.string.sort_name)
-            var expression = "="
+            var fieldName = ""
+            var expression = ""
             var value = ""
+
             for(i in 0 until fieldsArray?.length()!! - 1){
                 list.add(fieldsArray.getJSONArray(i).getString(1))
                 for (j in 0 until filtersArray?.length()!! - 1){
                     if (fieldsArray.getJSONArray(i).getString(0) == filtersArray.getString(0)) {
                         fieldName = fieldsArray.getJSONArray(i).getString(1)
-                        Log.d(fieldName, fieldsArray.getJSONArray(i).getString(1))
                     } else if (listFields.contains(filtersArray.getString(0))) {
                         when(filtersArray.getString(0)){
                             "name" -> fieldName = context.resources.getString(org.agrinext.agrimobile.R.string.sort_name)
@@ -85,7 +80,6 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
                             "owner" -> fieldName = context.resources.getString(org.agrinext.agrimobile.R.string.created_by)
                             "modified_by" -> fieldName = context.resources.getString(org.agrinext.agrimobile.R.string.modified_by)
                         }
-                        Log.d(fieldName, filtersArray.getString(0))
                     }
                     expression = filtersArray.getString(1)
                     value = filtersArray.getString(2)
@@ -96,6 +90,7 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerField.adapter = spinnerAdapter
 
+            // Set Filter FieldName
             for (i in 0 until spinnerField.count) {
                 if (spinnerField.getItemAtPosition(i).equals(fieldName)) {
                     spinnerField.setSelection(i)
@@ -103,13 +98,15 @@ class FilterViewAdapter(filterList:JSONArray): RecyclerView.Adapter<FilterViewAd
                 }
             }
 
+            // Set Filter Operator / Expression
             for (i in 0 until spinnerExpression.count) {
-                if (spinnerExpression.getItemAtPosition(i).equals(expression)) {
+                if (spinnerExpression.getItemAtPosition(i).equals(FieldUtils().getLabelFromExpression(context, expression))) {
                     spinnerExpression.setSelection(i)
                     break
                 }
             }
 
+            // Set Filter value / Expression
             fieldsValue.setText(value)
         }
     }

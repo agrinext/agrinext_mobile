@@ -19,23 +19,19 @@ import org.agrinext.agrimobile.Android.PermissionUtils
 import android.provider.MediaStore
 import android.content.Intent
 import android.app.Activity
-import android.content.ContentValues.TAG
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Environment
 import android.os.Environment.getExternalStorageDirectory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import android.support.v4.content.FileProvider
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class UserProfile : Fragment() {
     var frappeClient: FrappeClient? = null
-    var userChoosenTask:String? = null
 
     companion object {
         val SELECT_FILE = 0
@@ -81,13 +77,11 @@ class UserProfile : Fragment() {
         builder.setItems(items, DialogInterface.OnClickListener { dialog, item ->
             val result = PermissionUtils().checkStoragePermission(activity)
             if (items[item] == "Take Photo") {
-                userChoosenTask = "Take Photo"
                 if (result) {
                     val cameraPerm = PermissionUtils().checkCameraPermission(activity)
                     if (cameraPerm) cameraIntent()
                 }
             } else if (items[item] == "Choose from Library") {
-                userChoosenTask = "Choose from Library"
                 if (result)
                     galleryIntent()
             } else if (items[item] == "Cancel") {
@@ -98,55 +92,29 @@ class UserProfile : Fragment() {
     }
 
     fun cameraIntent() {
-
         val mIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(mIntent, REQUEST_CAMERA)
-        /*
-
-        val mIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-        mIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (mIntent.resolveActivity(activity.packageManager) != null) {
-            // Create the File where the photo should go
-            var photoFile: File? = null
-            try {
-                photoFile = createImageFile()
-            } catch (ex: IOException) {
-                // Error occurred while creating the File
-                Log.i(TAG, "IOException")
-            }
-
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                mIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile))
-                FileProvider.getUriForFile(context, context.applicationContext.packageName + ".FrappeFileProvider", createImageFile());
-                activity.startActivityForResult(mIntent, REQUEST_CAMERA)
-            }
-        }
-
-        */
     }
 
     fun galleryIntent() {
         val mIntent = Intent()
         mIntent.type = "image/*"
-        mIntent.action = Intent.ACTION_GET_CONTENT//
-        activity.startActivityForResult(Intent.createChooser(mIntent, "Select File"), SELECT_FILE)
+        mIntent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(mIntent, "Select File"), SELECT_FILE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE)
-                onSelectFromGalleryResult(data!!)
-            else if (requestCode == REQUEST_CAMERA)
-                onCaptureImageResult(data!!)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
+            when (requestCode) {
+                SELECT_FILE -> onSelectFromGalleryResult(data!!)
+                REQUEST_CAMERA -> onCaptureImageResult(data!!)
+            }
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun onSelectFromGalleryResult(data: Intent?) {
         if (data != null) {
-            val bm = MediaStore.Images.Media.getBitmap(activity.applicationContext.getContentResolver(), data.data)
+            val bm = MediaStore.Images.Media.getBitmap(activity.applicationContext.contentResolver, data.data)
             ivProfileImage.setImageBitmap(bm)
         }
     }

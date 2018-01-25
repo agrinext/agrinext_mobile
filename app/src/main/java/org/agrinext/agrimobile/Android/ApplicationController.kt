@@ -19,6 +19,9 @@ import org.acra.data.StringFormat
 import org.acra.sender.HttpSender
 import org.json.JSONObject
 import org.agrinext.agrimobile.R
+import android.os.StrictMode
+
+
 
 /**
  * Created by revant on 31/12/17.
@@ -40,6 +43,8 @@ class ApplicationController : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        val builder = StrictMode.VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
     }
 
     override fun attachBaseContext(base: Context) {

@@ -71,5 +71,6 @@ android {
         // compile "org.jetbrains.anko:anko-support-v4:$anko_version"
         implementation 'com.android.support:cardview-v7:26.1.0'
         compile 'com.github.mntechnique:MobileOTPAuthenticator:otp-test-SNAPSHOT'
+        implementation 'com.facebook.fresco:fresco:1.8.0'
     }
 }

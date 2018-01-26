@@ -5,13 +5,10 @@ import android.accounts.AccountManager
 import android.content.Intent
 import android.content.Intent.createChooser
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -25,7 +22,6 @@ import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.*
-import org.jetbrains.anko.db.NULL
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
@@ -145,6 +141,11 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
                 toast(R.string.app_name)
             }
         } else {
+            val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+            drawer_layout.addDrawerListener(toggle)
+            toggle.syncState()
+            toggle.isDrawerIndicatorEnabled = false
+
             desktop_text.setText(R.string.tapToSignIn)
             linearLayoutDesktop.onClick {
                 startActivity<AuthenticatorActivity>(

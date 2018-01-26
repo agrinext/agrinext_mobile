@@ -20,7 +20,7 @@ import org.acra.sender.HttpSender
 import org.json.JSONObject
 import org.agrinext.agrimobile.R
 import android.os.StrictMode
-
+import com.facebook.drawee.backends.pipeline.Fresco
 
 
 /**
@@ -45,6 +45,7 @@ class ApplicationController : Application() {
         instance = this
         val builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
+        Fresco.initialize(this)
     }
 
     override fun attachBaseContext(base: Context) {

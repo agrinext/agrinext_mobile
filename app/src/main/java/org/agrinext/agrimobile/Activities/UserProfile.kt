@@ -20,11 +20,14 @@ import android.provider.MediaStore
 import android.content.Intent
 import android.app.Activity
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Environment
-import android.os.Environment.getExternalStorageDirectory
+import android.provider.OpenableColumns
+import com.facebook.drawee.view.SimpleDraweeView
+import org.agrinext.agrimobile.BuildConfig
+import org.jetbrains.anko.accountManager
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,12 +50,28 @@ class UserProfile : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupProfileText()
         setupProfilePhoto()
-    }
-
-    fun setupProfilePhoto() {
         ivProfileImage.setOnClickListener {
             selectImage()
         }
+    }
+
+    fun setupProfilePhoto() {
+        var picture = ""
+        val request = OAuthRequest(Verb.GET, frappeClient?.getServerURL() + getString(R.string.openIDEndpoint))
+        val callback = object : AuthReqCallback{
+            override fun onErrorResponse(error: String) {
+                Log.d("responseError", error)
+            }
+
+            override fun onSuccessResponse(result: String) {
+                val jsonResponse = JSONObject(result)
+                picture = jsonResponse.getString("picture")
+
+                val uri = Uri.parse(picture)
+                (ivProfileImage as SimpleDraweeView).setImageURI(uri)
+            }
+        }
+        frappeClient?.executeRequest(request, callback)
     }
 
     fun setupProfileText() {
@@ -115,14 +134,64 @@ class UserProfile : Fragment() {
     fun onSelectFromGalleryResult(data: Intent?) {
         if (data != null) {
             val bm = MediaStore.Images.Media.getBitmap(activity.applicationContext.contentResolver, data.data)
-            ivProfileImage.setImageBitmap(bm)
+            val cursor = activity.contentResolver.query(data.data, null, null, null, null);
+            var byteArrayOutputStream = ByteArrayOutputStream()
+
+            var displayName = ""
+
+            if (cursor != null && cursor.moveToFirst()) {
+                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            }
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            val picb64string = android.util.Base64.encodeToString(byteArrayOutputStream.toByteArray(), android.util.Base64.DEFAULT);
+            Log.d("b64enc", picb64string)
+            uploadPhoto(picb64string, displayName)
+            //ivProfileImage.setImageBitmap(bm)
         }
     }
 
+    fun uploadPhoto(fileData:String, filename: String? = null) {
+        val accounts = context.accountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
+        val request = OAuthRequest(Verb.PUT, frappeClient?.getServerURL() + "/api/method/agrinext.api.upload_file")
+        request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        var _filename = filename
+        if (filename.isNullOrEmpty()) {
+            _filename = UUID.randomUUID().toString().replace("-", "")
+        }
+
+        request.addBodyParameter("filename", _filename)
+        request.addBodyParameter("filedata", fileData)
+        request.addBodyParameter("doctype", "User")
+        request.addBodyParameter("docname", accounts[0].name)
+        request.addBodyParameter("decode", "true")
+        request.addBodyParameter("docfield", "user_image")
+
+        val callback = object : AuthReqCallback {
+            override fun onSuccessResponse(result: String) {
+                Log.d("SUCCESS!", result)
+                setupProfilePhoto()
+            }
+
+            override fun onErrorResponse(error: String) {
+                Log.d("ERROR!", error)
+            }
+
+        }
+
+        frappeClient?.executeRequest(request, callback)
+    }
     fun onCaptureImageResult(data:Intent) {
         val thumbnail = data.extras.get("data") as Bitmap
         val bytes = ByteArrayOutputStream()
+
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
+
+        val picb64string = android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.DEFAULT);
+
+        Log.d("b64enc", picb64string)
+        uploadPhoto(picb64string)
+        /*
+
         val destination = File(getExternalStorageDirectory(),
                 System.currentTimeMillis().toString() + ".jpg")
         val fo: FileOutputStream
@@ -131,6 +200,8 @@ class UserProfile : Fragment() {
         fo.write(bytes.toByteArray())
         fo.close()
         ivProfileImage.setImageBitmap(thumbnail)
+
+        */
     }
 
     @Throws(IOException::class)

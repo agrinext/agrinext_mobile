@@ -11,6 +11,8 @@ import android.util.Log
 import org.agrinext.agrimobile.Activities.ListingActivity
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -83,7 +85,12 @@ open class BaseCompatActivity : AppCompatActivity(), ConnectivityReceiver.Connec
         if (doctypeMetaString != null){
             this.docMeta = JSONObject(doctypeMetaString)
         } else {
-            FrappeClient(applicationContext).retrieveDocTypeMeta(editor, keyDocTypeMeta, this.doctype)
+            doAsync {
+                FrappeClient(applicationContext).retrieveDocTypeMeta(editor, keyDocTypeMeta, doctype)
+                uiThread {
+                    setupDocType(doctype)
+                }
+            }
         }
     }
 

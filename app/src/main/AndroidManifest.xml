@@ -46,6 +46,7 @@
         </activity>
         <activity android:name=".Activities.FormGeneratorActivity"></activity>
         <activity android:name=".Activities.FiltersActivity"></activity>
+        <activity android:name=".Activities.PhotosActivity"></activity>
     </application>
 
 </manifest>

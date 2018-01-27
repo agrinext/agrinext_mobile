@@ -4,25 +4,34 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Intent
 import android.content.Intent.createChooser
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.facebook.drawee.view.SimpleDraweeView
+import com.github.scribejava.core.model.OAuthRequest
+import com.github.scribejava.core.model.Verb
+import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import com.mntechnique.otpmobileauth.auth.AuthenticatorActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_user_profile.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.json.JSONObject
 
 
 class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -59,6 +68,7 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         // menuInflater.inflate(R.menu.list_view, menu)
+        setupProfilePhoto()
         return true
     }
 
@@ -153,5 +163,29 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
                 )
             }
         }
+    }
+
+    private fun setupProfilePhoto() {
+        (ivProfileImageView as SimpleDraweeView).setOnClickListener {
+            setupFragment(UserProfile())
+            drawer_layout.closeDrawer(GravityCompat.START)
+        }
+        var picture = ""
+        val request = OAuthRequest(Verb.GET, frappeClient?.getServerURL() + getString(R.string.openIDEndpoint))
+        val callback = object : AuthReqCallback {
+            override fun onErrorResponse(error: String) {
+                Log.d("responseError", error)
+            }
+
+            override fun onSuccessResponse(result: String) {
+                val jsonResponse = JSONObject(result)
+                picture = jsonResponse.getString("picture")
+                val uri = Uri.parse(picture)
+                (ivProfileImageView as SimpleDraweeView).imageURI = uri
+                userFullName.setText(jsonResponse.getString("name"))
+                userEmailAddress.setText(jsonResponse.getString("email"))
+            }
+        }
+        frappeClient?.executeRequest(request, callback)
     }
 }

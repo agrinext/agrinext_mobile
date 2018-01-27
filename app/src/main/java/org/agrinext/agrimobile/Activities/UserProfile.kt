@@ -24,8 +24,10 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.OpenableColumns
 import com.facebook.drawee.view.SimpleDraweeView
+import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
 import org.agrinext.agrimobile.BuildConfig
 import org.jetbrains.anko.accountManager
+import org.jetbrains.anko.support.v4.startActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -48,14 +50,13 @@ class UserProfile : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupProfileText()
-        setupProfilePhoto()
+        setupProfilePhotoAndName()
         ivProfileImage.setOnClickListener {
             selectImage()
         }
     }
 
-    fun setupProfilePhoto() {
+    fun setupProfilePhotoAndName() {
         var picture = ""
         val request = OAuthRequest(Verb.GET, frappeClient?.getServerURL() + getString(R.string.openIDEndpoint))
         val callback = object : AuthReqCallback{
@@ -69,20 +70,6 @@ class UserProfile : Fragment() {
 
                 val uri = Uri.parse(picture)
                 (ivProfileImage as SimpleDraweeView).setImageURI(uri)
-            }
-        }
-        frappeClient?.executeRequest(request, callback)
-    }
-
-    fun setupProfileText() {
-        val request = OAuthRequest(Verb.GET, frappeClient?.getServerURL() + getString(R.string.openIDEndpoint))
-        val callback = object : AuthReqCallback{
-            override fun onErrorResponse(error: String) {
-                Log.d("responseError", error)
-            }
-
-            override fun onSuccessResponse(result: String) {
-                val jsonResponse = JSONObject(result)
                 tvFullName.setText(jsonResponse.getString("name"))
             }
         }
@@ -90,20 +77,27 @@ class UserProfile : Fragment() {
     }
 
     fun selectImage() {
-        val items = arrayOf<CharSequence>("Take Photo", "Choose from Library", "Cancel")
+        val items = arrayOf<CharSequence>(
+                getString(R.string.take_photo),
+                getString(R.string.choose_from_gallery),
+                getString(R.string.previous_photos),
+                getString(R.string.cancel)
+        )
         val builder = AlertDialog.Builder(activity)
-        builder.setTitle("Add Photo!")
+        builder.setTitle(getString(R.string.add_photo))
         builder.setItems(items, DialogInterface.OnClickListener { dialog, item ->
             val result = PermissionUtils().checkStoragePermission(activity)
-            if (items[item] == "Take Photo") {
+            if (items[item] == getString(R.string.take_photo)) {
                 if (result) {
                     val cameraPerm = PermissionUtils().checkCameraPermission(activity)
                     if (cameraPerm) cameraIntent()
                 }
-            } else if (items[item] == "Choose from Library") {
+            } else if (items[item] == getString(R.string.choose_from_gallery)) {
                 if (result)
                     galleryIntent()
-            } else if (items[item] == "Cancel") {
+            } else if (items[item] == getString(R.string.previous_photos)) {
+                startActivity<PhotosActivity>(DOCTYPE to "File")
+            } else if (items[item] == getString(R.string.cancel)) {
                 dialog.dismiss()
             }
         })
@@ -142,7 +136,7 @@ class UserProfile : Fragment() {
             if (cursor != null && cursor.moveToFirst()) {
                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
             }
-            bm.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            bm.compress(Bitmap.CompressFormat.JPEG, 60, byteArrayOutputStream)
             val picb64string = android.util.Base64.encodeToString(byteArrayOutputStream.toByteArray(), android.util.Base64.DEFAULT);
             Log.d("b64enc", picb64string)
             uploadPhoto(picb64string, displayName)
@@ -169,7 +163,7 @@ class UserProfile : Fragment() {
         val callback = object : AuthReqCallback {
             override fun onSuccessResponse(result: String) {
                 Log.d("SUCCESS!", result)
-                setupProfilePhoto()
+                setupProfilePhotoAndName()
             }
 
             override fun onErrorResponse(error: String) {
@@ -184,7 +178,7 @@ class UserProfile : Fragment() {
         val thumbnail = data.extras.get("data") as Bitmap
         val bytes = ByteArrayOutputStream()
 
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 60, bytes)
 
         val picb64string = android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.DEFAULT);
 

@@ -69,7 +69,21 @@ class PhotosActivity : BaseCompatActivity() {
                 val response = JSONObject(s)
                 // JSON Array from frappe's listing
                 for (i in 0 until response.getJSONArray("data").length()) {
-                    recyclerModels.put(response.getJSONArray("data").get(i))
+                    val jsonObject = response.getJSONArray("data").getJSONObject(i)
+                    var imageExtensions = ArrayList<String>().apply {
+                        add("jpg")
+                        add("jpeg")
+                        add("png")
+                    }
+                    if (imageExtensions.contains(
+                                    jsonObject?.getString("file_url")
+                                            ?.substring(jsonObject
+                                                    ?.getString("file_url").lastIndexOf(".") + 1
+                                            )?.toLowerCase()
+                            )
+                    ) {
+                        recyclerModels.put(jsonObject)
+                    }
                 }
                 if (mRecyclerView.adapter != null){
                     // Notify an adapter

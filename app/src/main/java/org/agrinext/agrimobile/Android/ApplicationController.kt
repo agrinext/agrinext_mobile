@@ -19,8 +19,9 @@ import org.acra.data.StringFormat
 import org.acra.sender.HttpSender
 import org.json.JSONObject
 import org.agrinext.agrimobile.R
-import android.os.StrictMode
+import com.facebook.cache.disk.DiskCacheConfig
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.core.ImagePipelineConfig
 
 
 /**
@@ -43,9 +44,11 @@ class ApplicationController : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        val builder = StrictMode.VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
-        Fresco.initialize(this)
+        val diskCacheConfig = DiskCacheConfig.newBuilder(this).build()
+        val config = ImagePipelineConfig.newBuilder(this)
+                .setMainDiskCacheConfig(diskCacheConfig)
+                .build()
+        Fresco.initialize(this, config)
     }
 
     override fun attachBaseContext(base: Context) {

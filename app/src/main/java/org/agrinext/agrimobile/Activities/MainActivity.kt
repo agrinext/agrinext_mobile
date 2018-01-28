@@ -91,9 +91,11 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
             R.id.nav_sellers -> {
                 setupFragment(UsersActivity())
             }
+            /*
             R.id.nav_my_profile -> {
                 setupFragment(UserProfile())
             }
+            */
             R.id.nav_my_produce -> {
                 setupFragment(ProduceActivity())
             }
@@ -166,7 +168,7 @@ class MainActivity : BaseCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun setupProfilePhoto() {
-        (ivProfileImageView as SimpleDraweeView).setOnClickListener {
+        navHeaderLinearLayout.setOnClickListener {
             setupFragment(UserProfile())
             drawer_layout.closeDrawer(GravityCompat.START)
         }

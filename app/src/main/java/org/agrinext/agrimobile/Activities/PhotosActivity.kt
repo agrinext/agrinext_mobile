@@ -1,18 +1,15 @@
 package org.agrinext.agrimobile.Activities
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import kotlinx.android.synthetic.main.activity_filters.*
+import android.view.View
+import com.mntechnique.otpmobileauth.auth.AuthReqCallback
+import kotlinx.android.synthetic.main.activity_photos.*
 import org.agrinext.agrimobile.Android.BaseCompatActivity
-import org.agrinext.agrimobile.Android.FilterViewAdapter
-import org.agrinext.agrimobile.Android.ListViewAdapter
+import org.agrinext.agrimobile.Android.FrappeClient
+import org.agrinext.agrimobile.Android.PhotoViewAdapter
 import org.agrinext.agrimobile.R
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.json.JSONArray
 import org.json.JSONObject
@@ -20,12 +17,12 @@ import org.json.JSONObject
 class PhotosActivity : BaseCompatActivity() {
 
     internal lateinit var mRecyclerView: RecyclerView
-    var recyclerAdapter: FilterViewAdapter? = null
+    var recyclerAdapter: PhotoViewAdapter? = null
     var recyclerModels = JSONArray()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_filters)
+        setContentView(R.layout.activity_photos)
 
         // set doctype and meta
         if(intent.hasExtra(DOCTYPE)){
@@ -35,46 +32,69 @@ class PhotosActivity : BaseCompatActivity() {
         // set filters
         if(intent.hasExtra(ListingActivity.KEY_FILTERS)) {
             this.filters = JSONArray(intent.extras.getString(ListingActivity.KEY_FILTERS))
-            recyclerModels = filters as JSONArray
+            fetchFiles(filters = filters!!)
+
         }
 
-        mRecyclerView = findViewById(R.id.filter_recycler_view)
+        mRecyclerView = findViewById(R.id.imageList)
 
-        val mLayoutManager = GridLayoutManager(this,2)
+        val mLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mRecyclerView.setLayoutManager(mLayoutManager)
-        Log.d("models", recyclerModels.toString())
-        Log.d("meta", docMeta.toString())
-        recyclerAdapter = FilterViewAdapter(recyclerModels, docMeta?:JSONObject())
+        recyclerAdapter = PhotoViewAdapter(recyclerModels, docMeta?:JSONObject())
         mRecyclerView.adapter = recyclerAdapter
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true)
 
-        bAddFilter.onClick {
-            recyclerModels.put(JSONArray().put("name").put("=").put(""))
-            recyclerAdapter!!.notifyItemInserted(recyclerModels.length() - 1)
-        }
+    }
 
-        bSetFilter.onClick {
-            var setFilter = false
-            for(i in 0 until recyclerModels.length()) {
-                Log.d("bSetFilters", recyclerModels.getJSONArray(i).toString())
-                if(recyclerModels.getJSONArray(i).length() == 0) {
-                    Log.d("bSetFilters", recyclerModels.toString())
-                    toast(getString(R.string.please_set_filter))
-                    setFilter = false
-                } else {
-                    setFilter = true
+    fun fetchFiles(filters: JSONArray) {
+
+        // if(recyclerModels.length() == 0) loadServerData = true
+
+        // make progress bar visible while loading data
+        imageProgress?.visibility = View.VISIBLE
+
+        val request = FrappeClient(this).get_all(
+                doctype = doctype!!,
+                fields = "[\"*\"]",
+                filters = filters.toString()
+        )
+
+        val responseCallback = object : AuthReqCallback {
+            override fun onSuccessResponse(s: String) {
+                val response = JSONObject(s)
+                // JSON Array from frappe's listing
+                for (i in 0 until response.getJSONArray("data").length()) {
+                    recyclerModels.put(response.getJSONArray("data").get(i))
                 }
+                if (mRecyclerView.adapter != null){
+                    // Notify an adapter
+                    recyclerAdapter!!.notifyDataSetChanged()
+                } else {
+                    // specify and add an adapter
+                    recyclerAdapter = PhotoViewAdapter(recyclerModels, docMeta!!)
+
+
+                    if (mRecyclerView.adapter == null)
+                        mRecyclerView.adapter = recyclerAdapter
+                }
+                // loadServerData = true
+
+                sortLayout.visibility = View.VISIBLE
+                imageProgress?.visibility = View.GONE
             }
-            if(setFilter || recyclerModels.length() == 0){
-                val results = Intent()
-                results.putExtra(ListingActivity.KEY_FILTERS, recyclerModels.toString())
-                results.putExtra(ListingActivity.KEY_DOCTYPE, doctype)
-                setResult(Activity.RESULT_OK, results)
-                finish()
+
+            override fun onErrorResponse(s: String) {
+                // loadServerData =  false
+                imageProgress?.visibility = View.VISIBLE
+                toast(R.string.somethingWrong)
             }
         }
+        FrappeClient(this).executeRequest(request, responseCallback)
+        // if(loadServerData) {
+        //     loadServerData = false
+        // }
     }
 }

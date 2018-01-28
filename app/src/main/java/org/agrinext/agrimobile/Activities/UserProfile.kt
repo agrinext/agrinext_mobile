@@ -1,5 +1,6 @@
 package org.agrinext.agrimobile.Activities
 
+import android.accounts.AccountManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -21,27 +22,20 @@ import android.content.Intent
 import android.app.Activity
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Environment
 import android.provider.OpenableColumns
 import com.facebook.drawee.view.SimpleDraweeView
 import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
+import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.FILTER
 import org.agrinext.agrimobile.BuildConfig
 import org.jetbrains.anko.accountManager
 import org.jetbrains.anko.support.v4.startActivity
+import org.json.JSONArray
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 class UserProfile : Fragment() {
     var frappeClient: FrappeClient? = null
-
-    companion object {
-        val SELECT_FILE = 0
-        val REQUEST_CAMERA = 1
-    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         frappeClient = FrappeClient(context)
@@ -54,6 +48,15 @@ class UserProfile : Fragment() {
         ivProfileImage.setOnClickListener {
             selectImage()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                SELECT_FILE -> onSelectFromGalleryResult(data!!)
+                REQUEST_CAMERA -> onCaptureImageResult(data!!)
+            }
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun setupProfilePhotoAndName() {
@@ -96,7 +99,21 @@ class UserProfile : Fragment() {
                 if (result)
                     galleryIntent()
             } else if (items[item] == getString(R.string.previous_photos)) {
-                startActivity<PhotosActivity>(DOCTYPE to "File")
+
+                val mAccountManager = AccountManager.get(activity)
+                val accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
+                val user = accounts?.get(0)?.name
+
+                var fileFilters = JSONArray()
+                fileFilters.put(
+                        JSONArray().put("attached_to_doctype").put("=").put("User")
+                ).put(
+                        JSONArray().put("attached_to_name").put("=").put(user)
+                )
+                startActivity<PhotosActivity>(
+                        ListingActivity.KEY_FILTERS to fileFilters.toString(),
+                        ListingActivity.KEY_DOCTYPE to "File"
+                )
             } else if (items[item] == getString(R.string.cancel)) {
                 dialog.dismiss()
             }
@@ -116,15 +133,6 @@ class UserProfile : Fragment() {
         startActivityForResult(Intent.createChooser(mIntent, "Select File"), SELECT_FILE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                SELECT_FILE -> onSelectFromGalleryResult(data!!)
-                REQUEST_CAMERA -> onCaptureImageResult(data!!)
-            }
-        } else super.onActivityResult(requestCode, resultCode, data)
-    }
-
     fun onSelectFromGalleryResult(data: Intent?) {
         if (data != null) {
             val bm = MediaStore.Images.Media.getBitmap(activity.applicationContext.contentResolver, data.data)
@@ -140,7 +148,6 @@ class UserProfile : Fragment() {
             val picb64string = android.util.Base64.encodeToString(byteArrayOutputStream.toByteArray(), android.util.Base64.DEFAULT);
             Log.d("b64enc", picb64string)
             uploadPhoto(picb64string, displayName)
-            //ivProfileImage.setImageBitmap(bm)
         }
     }
 
@@ -174,6 +181,7 @@ class UserProfile : Fragment() {
 
         frappeClient?.executeRequest(request, callback)
     }
+
     fun onCaptureImageResult(data:Intent) {
         val thumbnail = data.extras.get("data") as Bitmap
         val bytes = ByteArrayOutputStream()
@@ -184,35 +192,11 @@ class UserProfile : Fragment() {
 
         Log.d("b64enc", picb64string)
         uploadPhoto(picb64string)
-        /*
-
-        val destination = File(getExternalStorageDirectory(),
-                System.currentTimeMillis().toString() + ".jpg")
-        val fo: FileOutputStream
-        destination.createNewFile()
-        fo = FileOutputStream(destination)
-        fo.write(bytes.toByteArray())
-        fo.close()
-        ivProfileImage.setImageBitmap(thumbnail)
-
-        */
     }
 
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        val storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(
-                imageFileName, // prefix
-                ".jpg", // suffix
-                storageDir      // directory
-        )
-
-        // Save a file: path for use with ACTION_VIEW intents
-        // mCurrentPhotoPath = "file:" + image.absolutePath
-        return image
+    companion object {
+        val SELECT_FILE = 0
+        val REQUEST_CAMERA = 1
     }
+
 }

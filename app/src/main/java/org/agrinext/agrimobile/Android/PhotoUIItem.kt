@@ -13,7 +13,6 @@ import android.widget.LinearLayout
 import com.facebook.common.util.UriUtil
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
-import org.agrinext.agrimobile.R
 import org.jetbrains.anko.*
 import org.jetbrains.anko.cardview.v7.cardView
 import org.jetbrains.anko.custom.ankoView

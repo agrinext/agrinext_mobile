@@ -3,6 +3,7 @@ package org.agrinext.agrimobile.Activities
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import kotlinx.android.synthetic.main.activity_photos.*
@@ -38,9 +39,10 @@ class PhotosActivity : BaseCompatActivity() {
 
         mRecyclerView = findViewById(R.id.imageList)
 
-        val mLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val mLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true)
         mRecyclerView.setLayoutManager(mLayoutManager)
-        recyclerAdapter = PhotoViewAdapter(recyclerModels, docMeta?:JSONObject())
+        recyclerAdapter = PhotoViewAdapter(recyclerModels, imagePreview)
+        // recyclerAdapter!!.setOnClickListener(this@PhotosActivity)
         mRecyclerView.adapter = recyclerAdapter
 
         // use this setting to improve performance if you know that changes
@@ -74,7 +76,7 @@ class PhotosActivity : BaseCompatActivity() {
                     recyclerAdapter!!.notifyDataSetChanged()
                 } else {
                     // specify and add an adapter
-                    recyclerAdapter = PhotoViewAdapter(recyclerModels, docMeta!!)
+                    recyclerAdapter = PhotoViewAdapter(recyclerModels, imagePreview/*, docMeta!!*/)
 
 
                     if (mRecyclerView.adapter == null)

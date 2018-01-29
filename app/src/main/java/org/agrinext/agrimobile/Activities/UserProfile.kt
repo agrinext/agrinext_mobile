@@ -187,8 +187,7 @@ class UserProfile : Fragment() {
     fun onCaptureImageResult(data:Intent) {
         val thumbnail = data.extras.get("data") as Bitmap
         val bytes = ByteArrayOutputStream()
-
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 60, bytes)
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
 
         val picb64string = android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.DEFAULT);
 

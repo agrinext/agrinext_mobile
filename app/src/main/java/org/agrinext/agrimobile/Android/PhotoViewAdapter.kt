@@ -59,12 +59,16 @@ class PhotoViewAdapter(var image_list:JSONArray, imagePreview:SimpleDraweeView):
             image.setOnClickListener {
                 imagePreview.imageURI = imageUri
                 imagePreview.setOnClickListener {
-                    setOrDeleteImage(jsonObject?.getString("name"), jsonObject?.getString("file_url"))
+                    setOrDeleteImage(
+                            jsonObject?.getString("name"),
+                            jsonObject?.getString("file_url"),
+                            imagePreview
+                    )
                 }
             }
         }
 
-        fun setOrDeleteImage(name:String?, fileUrl:String?) {
+        fun setOrDeleteImage(name:String?, fileUrl:String?, imagePreview: SimpleDraweeView) {
             val items = arrayOf<CharSequence>(
                     itemView.context.getString(R.string.set_photo),
                     itemView.context.getString(R.string.delete_photo),
@@ -74,9 +78,9 @@ class PhotoViewAdapter(var image_list:JSONArray, imagePreview:SimpleDraweeView):
             builder.setTitle(itemView.context.getString(R.string.select_photo))
             builder.setItems(items, DialogInterface.OnClickListener { dialog, item ->
                 if (items[item] == itemView.context.getString(R.string.set_photo)) {
-                    setPhoto(fileUrl)
+                    setPhoto(fileUrl, imagePreview)
                 } else if (items[item] == itemView.context.getString(R.string.delete_photo)) {
-                    deletePhoto(name)
+                    deletePhoto(name, imagePreview)
                 } else if (items[item] == itemView.context.getString(R.string.cancel)) {
                     dialog.dismiss()
                 }
@@ -84,7 +88,7 @@ class PhotoViewAdapter(var image_list:JSONArray, imagePreview:SimpleDraweeView):
             builder.show()
         }
 
-        fun setPhoto(fileUrl:String?) {
+        fun setPhoto(fileUrl:String?, imagePreview: SimpleDraweeView) {
             val mAccountManager = AccountManager.get(itemView.context)
             val accounts = mAccountManager?.getAccountsByType(BuildConfig.APPLICATION_ID)
             val user = accounts!![0].name
@@ -93,6 +97,7 @@ class PhotoViewAdapter(var image_list:JSONArray, imagePreview:SimpleDraweeView):
             val callback = object : AuthReqCallback {
                 override fun onSuccessResponse(result: String) {
                     Log.d("SUCCESS!", result)
+                    imagePreview.isEnabled = true
                     (itemView.context as AppCompatActivity).finish()
                 }
 
@@ -101,14 +106,16 @@ class PhotoViewAdapter(var image_list:JSONArray, imagePreview:SimpleDraweeView):
                 }
 
             }
+            imagePreview.isEnabled = false
             FrappeClient(itemView.context)?.executeRequest(request, callback)
         }
 
-        fun deletePhoto(name:String?) {
+        fun deletePhoto(name:String?, imagePreview: SimpleDraweeView) {
             val request = OAuthRequest(Verb.DELETE, FrappeClient(itemView.context)?.getServerURL() + "/api/resource/File/" + name)
             val callback = object : AuthReqCallback {
                 override fun onSuccessResponse(result: String) {
                     Log.d("SUCCESS!", result)
+                    imagePreview.isEnabled = true
                     (itemView.context as AppCompatActivity).finish()
                 }
 
@@ -117,6 +124,7 @@ class PhotoViewAdapter(var image_list:JSONArray, imagePreview:SimpleDraweeView):
                 }
 
             }
+            imagePreview.isEnabled = false
             FrappeClient(itemView.context)?.executeRequest(request, callback)
         }
 

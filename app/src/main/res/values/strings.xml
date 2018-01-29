@@ -53,6 +53,14 @@
     <string name="labelNotEqual">Not Equal</string>
     <string name="labelNotLike">Not Like</string>
     <string name="labelBetween">Between</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_from_gallery">Choose from Gallery</string>
+    <string name="cancel">Cancel</string>
+    <string name="previous_photos">Previous Photos</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="set_photo">Set Photo</string>
+    <string name="delete_photo">Delete Photo</string>
+    <string name="select_photo">Select Photo</string>
 
     <!-- OAUTH -->
     <string name="package_name">org.agrinext.agrimobile</string>
@@ -65,10 +73,5 @@
 
     <!-- AgriNext -->
     <string name="guest_api_key">dd35bcc1e134e69e7c318c0748622d19ecf025e0ef5492ddef3f5f77</string>
-    <string name="take_photo">Take Photo</string>
-    <string name="choose_from_gallery">Choose from Gallery</string>
-    <string name="cancel">Cancel</string>
-    <string name="previous_photos">Previous Photos</string>
-    <string name="add_photo">Add Photo</string>
 
 </resources>

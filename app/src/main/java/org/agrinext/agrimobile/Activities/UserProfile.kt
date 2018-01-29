@@ -31,6 +31,7 @@ import org.jetbrains.anko.accountManager
 import org.jetbrains.anko.support.v4.startActivity
 import org.json.JSONArray
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -157,7 +158,8 @@ class UserProfile : Fragment() {
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         var _filename = filename
         if (filename.isNullOrEmpty()) {
-            _filename = UUID.randomUUID().toString().replace("-", "")
+            val timeStamp = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(Date())
+            _filename = "AgriNext-Profile-Photo-" + timeStamp + ".JPG"
         }
 
         request.addBodyParameter("filename", _filename)

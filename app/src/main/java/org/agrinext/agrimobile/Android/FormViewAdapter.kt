@@ -49,6 +49,7 @@ class FormViewAdapter(metaList: ArrayList<DocField>) : RecyclerView.Adapter<Form
         }
 
         this.position = p
+        holder.label.text = metaList[p].label + " : "
         holderArray!!.add(holder) // populate controller for each row generated
     }
 }

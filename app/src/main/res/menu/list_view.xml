@@ -16,4 +16,8 @@
     <item
         android:title="@string/actionSort"
         android:id="@+id/action_sort"/>
+
+    <item
+        android:title="Add"
+        android:id="@+id/action_add"/>
 </menu>

@@ -148,6 +148,12 @@ open class ListingActivity : Fragment(), View.OnClickListener {
                 startActivityForResult(mIntent,SET_DOCTYPE_FILTERS)
                 return true
             }
+            R.id.action_add -> {
+                var intent = Intent(activity, FormGeneratorActivity::class.java)
+                intent.putExtra("DocType", this.doctype)
+                startActivity(intent)
+                return true
+            }
             else -> return false
         }
     }

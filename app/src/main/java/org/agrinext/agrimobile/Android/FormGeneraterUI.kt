@@ -34,31 +34,35 @@ class FormGeneraterUI(docMeta: DocField): AnkoComponent<ViewGroup> {
                         weight = 0.40f //not support value
                     }
 
-                    if (docMeta.fieldtype=="Data" || docMeta.fieldtype=="Link") {
+                    if (docMeta.fieldtype=="Data" || docMeta.fieldtype=="Link"
+                            || docMeta.fieldtype=="DateTime" || docMeta.fieldtype=="Date") {
 
                         editText {
                             id = Ids.fieldValue
                             setText("FieldValue")
                             textSize = dip(8).toFloat()
-                            inputType = 0
                             backgroundResource = android.R.color.transparent
                         }.lparams(width = dip(0)) {
-                            weight = 0.60f //not support value
+                            weight = 0.60f
                         }
+
                     } else if(docMeta.fieldtype=="Check"){
+
                         checkBox {
                             id = Ids.fieldValue
                             check(true)
                         }.lparams(width = dip(0)) {
-                            weight = 0.60f //not support value
+                            weight = 0.60f
                         }
+
                     } else {
+
                         textView {
                             id = Ids.fieldValue
                             text = "FieldName"
                             textSize = dip(8).toFloat()
                         }.lparams(width = dip(0)) {
-                            weight = 0.60f //not support value
+                            weight = 0.60f
                         }
                     }
 

@@ -57,8 +57,11 @@ open class ListingActivity : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
+        var itemPosition = mRecyclerView.getChildLayoutPosition(view)
+        var value = JSONObject(recyclerModels.get(itemPosition).toString()).get("name")
         var intent = Intent(activity, FormGeneratorActivity::class.java)
         intent.putExtra("DocType", this.doctype)
+        intent.putExtra("DocName", value.toString())
         startActivity(intent)
     }
 
@@ -143,6 +146,12 @@ open class ListingActivity : Fragment(), View.OnClickListener {
                 mIntent.putExtra(DOCTYPE, this.doctype)
                 mIntent.putExtra(KEY_FILTERS, this.filters.toString())
                 startActivityForResult(mIntent,SET_DOCTYPE_FILTERS)
+                return true
+            }
+            R.id.action_add -> {
+                var intent = Intent(activity, FormGeneratorActivity::class.java)
+                intent.putExtra("DocType", this.doctype)
+                startActivity(intent)
                 return true
             }
             else -> return false

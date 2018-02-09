@@ -32,6 +32,8 @@
     <string name="ok">Ok</string>
     <string name="please_enable_net_connection">Please Enable Network Connection!</string>
     <string name="action_search">Search</string>
+    <string name="edit_form">Edit</string>
+    <string name="save_form">Save</string>
     <string name="acra_toast_text">Error Reported</string>
     <string name="notification_text">Sorry, the app crashed. Please send a report to developers</string>
     <string name="notification_title">AgriNext Crash Report</string>

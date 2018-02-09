@@ -1,24 +1,17 @@
 package org.agrinext.agrimobile.Activities
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.View
+import android.view.*
 import android.widget.*
-import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import org.agrinext.agrimobile.Android.*
 import org.agrinext.agrimobile.Frappe.DocField
 import org.agrinext.agrimobile.R
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.toast
-import org.json.JSONArray
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.util.*
-import android.util.Log
-import android.view.ViewTreeObserver
-
+import android.view.MenuItem
+import android.view.Menu
 
 class FormGeneratorActivity : BaseCompatActivity() {
 
@@ -27,12 +20,15 @@ class FormGeneratorActivity : BaseCompatActivity() {
     var recyclerModels = ArrayList<DocField>()
     var docname: String = ""
     var progressBar: ProgressBar? = null
-    var excludeName = ArrayList<String>().apply{
+    var excludeName = ArrayList<String>().apply {
         add("produce_name")
     }
+    lateinit var save: MenuItem
+    lateinit var edit: MenuItem
 
     companion object {
         var docData = JSONObject()
+        lateinit var doctype: String
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +41,14 @@ class FormGeneratorActivity : BaseCompatActivity() {
 
         // set meta
         if (intent.hasExtra("DocType")) {
+            doctype = this.doctype
             setupDocType(intent.getStringExtra("DocType"))
         }
 
         // if docname, fetch doc data
         if (intent.hasExtra("DocName")) {
             this.docname = intent.getStringExtra("DocName")
-            fetchDoc(this.docname!!)
+            FormUtils(this).fetchDoc(this.doctype!!, this.docname, "[\"*\"]", setupCallback)
         }
 
         validateDocMeta()
@@ -64,35 +61,38 @@ class FormGeneratorActivity : BaseCompatActivity() {
         val fields = docMeta?.getJSONArray("fields")!!
         var pushDocMeta: DocField
 
-        for (i in 0 until fields.length()-1){
+        for (i in 0 until fields.length() - 1) {
             pushDocMeta = DocField(fields.getJSONObject(i))
-            if(pushDocMeta.fieldname != null && !excludeName.contains(pushDocMeta!!.fieldname))
+            if (pushDocMeta.fieldname != null && !excludeName.contains(pushDocMeta!!.fieldname))
                 recyclerModels.add(pushDocMeta)
         }
     }
 
-    // Call server and fetch data for the clicked item
-    fun fetchDoc(docname: String) {
-        val filters = JSONArray().put(JSONArray().put("name").put("=").put(docname))
-        val request = FrappeClient(this).get_all(
-                doctype = this.doctype!!,
-                filters = filters.toString(),
-                fields = "[\"*\"]"
-        )
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu);
 
-        val responseCallback = object : AuthReqCallback {
-            override fun onSuccessResponse(result: String) {
-                docData = JSONObject(JSONObject(result).getJSONArray("data").get(0).toString())
-                this@FormGeneratorActivity.findViewById<TextView>(R.id.docname).setText(docname)
-                viewIterator()
-            }
+        menuInflater.inflate(R.menu.form_view_menu, menu)
+        edit = menu.findItem(R.id.edit_form)
+        save = menu.findItem(R.id.save_form)
+        if (docname.isBlank()) edit.isVisible = true
 
-            override fun onErrorResponse(error: String) {
-                toast(R.string.somethingWrong)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var bool = item.toString() == "Edit"
+        edit.isVisible = !bool
+        save.isVisible = bool
+
+        when (item?.itemId) {
+            R.id.edit_form -> {
+                return true
             }
-        }
-        doAsync {
-            FrappeClient(this@FormGeneratorActivity).executeRequest(request, responseCallback)
+            R.id.save_form -> {
+                return true
+            }
+            else -> return false
         }
     }
 
@@ -118,15 +118,13 @@ class FormGeneratorActivity : BaseCompatActivity() {
                 viewIterator()
             }
         })
-
     }
 
     override fun onBackPressed() {
         finish()
     }
 
-    fun viewIterator(){
-
+    fun viewIterator() {
         var holderArray = FormViewAdapter.holderArray
         for (i in 0..holderArray.size - 1) {
             updateFieldData(holderArray[i])
@@ -147,7 +145,7 @@ class FormGeneratorActivity : BaseCompatActivity() {
         if (viewType == "EditText" && (jsonObject.fieldtype == "DateTime" || jsonObject.fieldtype == "Date")) {
             val value = holder.value as EditText
             if (docname.isNotBlank()) value.setText(docData.getString(jsonObject.fieldname))
-            displayCalender(value)
+            FormUtils(this).displayCalender(value)
             value.inputType = 0
         } else if (viewType == "EditText") {
             val value = holder.value as EditText
@@ -163,38 +161,13 @@ class FormGeneratorActivity : BaseCompatActivity() {
 
     }
 
-    fun displayCalender(value: EditText) {
-        // Opens up a Calendar dialog box if the fieldtype is DateTime or Date
-
-        var cal = Calendar.getInstance()
-
-        val dateSetListener = object : DatePickerDialog.OnDateSetListener {
-            override fun onDateSet(view: DatePicker, year: Int, monthOfYear: Int,
-                                   dayOfMonth: Int) {
-                cal.set(Calendar.YEAR, year)
-                cal.set(Calendar.MONTH, monthOfYear)
-                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                val myFormat = "yyyy-MM-dd" // mention the format you need
-                val sdf = SimpleDateFormat(myFormat, Locale.ENGLISH)
-                value.setText(sdf.format(cal.time))
-            }
+    // callback for fetching docData
+    val setupCallback: (JSONObject) -> Unit = {
+        data -> run {
+            docData = data
+            this.findViewById<TextView>(R.id.docname).setText(docname)
+            if (FormUtils(this).isOwner("zarrar@erpnext.com")) edit.isVisible = true
+            this.viewIterator()
         }
-
-        var dateDialog = DatePickerDialog(this@FormGeneratorActivity,
-                dateSetListener,
-                // set DatePickerDialog to point to today's date when it loads up
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH))
-
-        value.setOnClickListener(View.OnClickListener {
-            dateDialog.show()
-        })
-
-        value.setOnFocusChangeListener(View.OnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                dateDialog.show()
-            }
-        })
     }
 }

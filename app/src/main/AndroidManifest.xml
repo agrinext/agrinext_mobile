@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:name=".Android.ApplicationController"
+        android:name="io.frappe.android.Controllers.ApplicationController"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name=".Android.ConnectivityReceiver"
+            android:name="io.frappe.android.BroadcastReceivers.ConnectivityReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -44,9 +44,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.FormGeneratorActivity"></activity>
-        <activity android:name=".Activities.FiltersActivity"></activity>
-        <activity android:name=".Activities.PhotosActivity"></activity>
     </application>
 
 </manifest>

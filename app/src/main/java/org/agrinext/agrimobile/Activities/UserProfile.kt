@@ -9,14 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.Verb
-import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import kotlinx.android.synthetic.main.activity_user_profile.*
-import org.agrinext.agrimobile.Android.FrappeClient
 import org.agrinext.agrimobile.R
 import org.json.JSONObject
 import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
-import org.agrinext.agrimobile.Android.PermissionUtils
 import android.provider.MediaStore
 import android.content.Intent
 import android.app.Activity
@@ -24,8 +21,11 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.facebook.drawee.view.SimpleDraweeView
-import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.DOCTYPE
-import org.agrinext.agrimobile.Android.BaseCompatActivity.Companion.FILTER
+import io.frappe.android.CallbackAsync.AuthReqCallback
+import io.frappe.android.Controllers.ListingFragment
+import io.frappe.android.Controllers.PhotosActivity
+import io.frappe.android.Frappe.FrappeClient
+import io.frappe.android.Utils.PermissionUtils
 import org.agrinext.agrimobile.BuildConfig
 import org.jetbrains.anko.accountManager
 import org.jetbrains.anko.support.v4.startActivity
@@ -63,7 +63,7 @@ class UserProfile : Fragment() {
     fun setupProfilePhotoAndName() {
         var picture = ""
         val request = OAuthRequest(Verb.GET, frappeClient?.getServerURL() + getString(R.string.openIDEndpoint))
-        val callback = object : AuthReqCallback{
+        val callback = object : AuthReqCallback {
             override fun onErrorResponse(error: String) {
                 Log.d("responseError", error)
             }
@@ -112,8 +112,8 @@ class UserProfile : Fragment() {
                         JSONArray().put("attached_to_name").put("=").put(user)
                 )
                 startActivity<PhotosActivity>(
-                        ListingActivity.KEY_FILTERS to fileFilters.toString(),
-                        ListingActivity.KEY_DOCTYPE to "File"
+                        ListingFragment.KEY_FILTERS to fileFilters.toString(),
+                        ListingFragment.KEY_DOCTYPE to "File"
                 )
             } else if (items[item] == getString(R.string.cancel)) {
                 dialog.dismiss()

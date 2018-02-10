@@ -1,9 +1,10 @@
 package org.agrinext.agrimobile.Activities
 import android.accounts.AccountManager
+import io.frappe.android.Controllers.ListingFragment
 import org.agrinext.agrimobile.BuildConfig
 import org.json.JSONArray
 
-class ProduceActivity : ListingActivity() {
+class ProduceActivity : ListingFragment() {
 
     override fun setupFilters() {
         val mAccountManager = AccountManager.get(activity)

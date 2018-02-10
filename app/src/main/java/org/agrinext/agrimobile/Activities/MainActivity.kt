@@ -19,14 +19,14 @@ import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
 import com.github.scribejava.core.model.OAuthRequest
 import com.github.scribejava.core.model.Verb
-import com.mntechnique.otpmobileauth.auth.AuthReqCallback
 import com.mntechnique.otpmobileauth.auth.AuthenticatorActivity
+import io.frappe.android.CallbackAsync.AuthReqCallback
+import io.frappe.android.Controllers.BaseCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_user_profile.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
-import org.agrinext.agrimobile.Android.BaseCompatActivity
 import org.agrinext.agrimobile.BuildConfig
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.*

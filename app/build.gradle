@@ -38,9 +38,9 @@ android {
         androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
         // Manual OTP LIB
-        // compile 'com.github.scribejava:scribejava-apis:4.2.0'
-        // compile fileTree(dir: 'libs', include: ['*.jar'])
-        // compile(name:'app-debug', ext: 'aar')
+        compile 'com.github.scribejava:scribejava-apis:4.2.0'
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+        compile(name:'app-debug', ext: 'aar')
 
         // Volley
         // compile 'com.android.volley:volley:1.1.0'
@@ -49,6 +49,7 @@ android {
         compile "org.jetbrains.anko:anko:$anko_version"
         // Appcompat-v7 (only Anko Commons)
         compile "org.jetbrains.anko:anko-appcompat-v7-commons:$anko_version"
+
         // Appcompat-v7 (Anko Layouts)
         compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
         compile "org.jetbrains.anko:anko-coroutines:$anko_version"
@@ -69,8 +70,8 @@ android {
         // compile "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
         // Support-v4 (Anko Layouts)
         // compile "org.jetbrains.anko:anko-support-v4:$anko_version"
+        implementation 'com.facebook.fresco:fresco:1.8.0'
         implementation 'com.android.support:cardview-v7:26.1.0'
         compile 'com.github.mntechnique:MobileOTPAuthenticator:otp-test-SNAPSHOT'
-        implementation 'com.facebook.fresco:fresco:1.8.0'
     }
 }

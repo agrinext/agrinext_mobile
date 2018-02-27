@@ -1,4 +1,4 @@
-package org.agrinext.agrimobile.Activities
+package org.agrinext.agrimobile.Fragments
 
 import android.accounts.AccountManager
 import android.os.Bundle

@@ -4,7 +4,11 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
+    def dbflow_version = "4.0.3"
+
     compileSdkVersion 26
     defaultConfig {
         applicationId "org.agrinext.agrimobile"
@@ -72,6 +76,13 @@ android {
         // compile "org.jetbrains.anko:anko-support-v4:$anko_version"
         implementation 'com.facebook.fresco:fresco:1.8.0'
         implementation 'com.android.support:cardview-v7:26.1.0'
-        compile 'com.github.mntechnique:MobileOTPAuthenticator:otp-test-SNAPSHOT'
+        compile 'com.github.mntechnique:MobileOTPAuthenticator:7487a9b2a8'
+
+        // annotationProcessor now supported in Android Gradle plugin 2.2
+        // See https://bitbucket.org/hvisser/android-apt/wiki/Migration
+        kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+        compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+        compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+        compile "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:4.2.4"
     }
 }

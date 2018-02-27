@@ -1,4 +1,4 @@
-package org.agrinext.agrimobile.Activities
+package org.agrinext.agrimobile.Fragments
 
 import io.frappe.android.Controllers.ListingFragment
 

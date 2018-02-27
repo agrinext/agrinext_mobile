@@ -1,11 +1,11 @@
-package org.agrinext.agrimobile.Activities
+package org.agrinext.agrimobile.Fragments
 
 import io.frappe.android.Controllers.ListingFragment
 
-class MarketActivity : ListingFragment() {
+class ItemActivity : ListingFragment() {
 
     override fun setupDocType() {
-        this.doctype = "Produce"
+        this.doctype = "Item"
         super.setupDocType()
     }
 }

@@ -23,11 +23,11 @@ import com.mntechnique.otpmobileauth.auth.AuthenticatorActivity
 import io.frappe.android.CallbackAsync.AuthReqCallback
 import io.frappe.android.Controllers.BaseCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_user_profile.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import org.agrinext.agrimobile.BuildConfig
+import org.agrinext.agrimobile.Fragments.*
 import org.agrinext.agrimobile.R
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick

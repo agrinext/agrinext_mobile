@@ -58,6 +58,9 @@ android {
         compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
         compile "org.jetbrains.anko:anko-coroutines:$anko_version"
 
+        // BottomNavigation Library
+        compile 'com.aurelhubert:ahbottomnavigation:2.1.0'
+
         // CardView-v7
         compile "org.jetbrains.anko:anko-cardview-v7:$anko_version"
         // Design

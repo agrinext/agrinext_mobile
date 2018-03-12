@@ -2,168 +2,48 @@ package org.agrinext.agrimobile.Activities
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.net.ConnectivityManager
+import android.content.Intent.createChooser
+import android.graphics.Color
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
-import com.github.scribejava.core.model.OAuthRequest
-import com.github.scribejava.core.model.Verb
-import com.mntechnique.otpmobileauth.auth.*
+import android.view.View
+import android.widget.*
+import com.mntechnique.otpmobileauth.auth.AuthenticatorActivity
+import io.frappe.android.Controllers.BaseCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import org.agrinext.agrimobile.Android.ApplicationController
-import org.agrinext.agrimobile.Android.ConnectivityReceiver
+import kotlinx.android.synthetic.main.content_main.*
 import org.agrinext.agrimobile.BuildConfig
-import org.agrinext.agrimobile.Helpers.checkNetworkConnection
+import org.agrinext.agrimobile.Fragments.*
 import org.agrinext.agrimobile.R
-import org.jetbrains.anko.alert
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.share
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
+import io.frappe.android.CallbackAsync.AuthReqCallback
+import io.frappe.android.Frappe.FrappeClient
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ConnectivityReceiver.ConnectivityReceiverListener{
+class MainActivity : BaseCompatActivity() {
     internal lateinit var mAccountManager: AccountManager
-
-    internal lateinit var accounts: Array <Account>
-    internal lateinit var accessTokenCallback: AuthReqCallback
-    internal lateinit var authRequest: AuthRequest
+    internal lateinit var accounts: Array<Account>
+    var current_position: Int = 0
     val ACCOUNT_TYPE = "ACCOUNT_TYPE"
     val TAG = "AgriNext"
+
+    companion object {
+        val LOCATION = "LOCATION"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        baseContext.registerReceiver(ConnectivityReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        ApplicationController.instance?.setConnectivityListener(this)
-
-        mAccountManager = AccountManager.get(this)
-
-        val oauth2Scope = resources.getString(org.agrinext.agrimobile.R.string.oauth2Scope)
-        val clientId = resources.getString(org.agrinext.agrimobile.R.string.clientId)
-        val clientSecret = resources.getString(org.agrinext.agrimobile.R.string.clientSecret)
-        val serverURL = resources.getString(org.agrinext.agrimobile.R.string.serverURL)
-        val redirectURI = resources.getString(org.agrinext.agrimobile.R.string.redirectURI)
-        val authEndpoint = resources.getString(org.agrinext.agrimobile.R.string.authEndpoint)
-        val tokenEndpoint = resources.getString(org.agrinext.agrimobile.R.string.tokenEndpoint)
-        val openIDEndpoint = resources.getString(org.agrinext.agrimobile.R.string.openIDEndpoint)
-
-        authRequest = AuthRequest(
-                applicationContext,
-                oauth2Scope, clientId, clientSecret, serverURL,
-                redirectURI, authEndpoint, tokenEndpoint)
-
-        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
-
-        val request = OAuthRequest(Verb.GET, serverURL + openIDEndpoint)
-        val responseCallback = object : AuthReqCallback {
-            override fun onSuccessResponse(s: String) {
-                val response = JSONObject(s)
-                Log.d(TAG,"OPENID FOUND")
-                Log.d(TAG,response.toString())
-            }
-
-            override fun onErrorResponse(s: String) {
-                Toast.makeText(applicationContext,"Error parsing response", Toast.LENGTH_LONG).show()
-            }
-        }
-
-        accessTokenCallback = object : AuthReqCallback {
-            override fun onSuccessResponse(s: String) {
-                Log.d("CallbackSuccess", s)
-                var bearerToken = JSONObject(s)
-                if (bearerToken.length() > 0) {
-                    authRequest.makeRequest(bearerToken.getString("access_token"), request, responseCallback)
-                }
-            }
-            override fun onErrorResponse(s: String) {
-                Log.d("CallbackError", s)
-            }
-        }
         fireUp()
-    }
-
-    override fun onNetworkConnectionChanged(isConnected: Boolean) {
-        Log.d("NetStat", isConnected.toString())
-        fireUp()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if (data != null){
-            if (requestCode == 1 && resultCode == Activity.RESULT_OK){
-                if (!data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME).isNullOrEmpty()){
-                    for(a in accounts){
-                        if(a.name.equals(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))){
-                            val ratt = RetrieveAuthTokenTask(applicationContext, accessTokenCallback)
-                            ratt.execute()
-                        }
-                    }
-                } else {
-                    finish()
-                }
-            }
-        } else if (data === null) {
-            Toast.makeText(applicationContext,"Account Error", Toast.LENGTH_LONG).show()
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    fun fireUp() {
-        val desktop_text = findViewById<TextView>(R.id.desktop_text)
-        val linearLayoutDesktop = findViewById<LinearLayout>(R.id.linearLayoutDesktop)
-
-        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
-        if (accounts.size == 1) {
-            setSupportActionBar(toolbar)
-
-            val toggle = ActionBarDrawerToggle(
-                    this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-            drawer_layout.addDrawerListener(toggle)
-            toggle.syncState()
-
-            nav_view.setNavigationItemSelectedListener(this)
-            desktop_text.setText(R.string.welcome)
-            linearLayoutDesktop.onClick {
-                val ratt = RetrieveAuthTokenTask(applicationContext, accessTokenCallback)
-                ratt.execute()
-            }
-        } else {
-            desktop_text.setText(R.string.tapToSignIn)
-            linearLayoutDesktop.onClick {
-                startActivity<AuthenticatorActivity>(
-                        ACCOUNT_TYPE to BuildConfig.APPLICATION_ID
-                )
-            }
-        }
-
-        if (!checkNetworkConnection(this)) {
-            alert("Click Ok when enabled") {
-                title = "Please Enable Network Connection!"
-                positiveButton("Ok"){
-                    fireUp()
-                }
-            }.show().setCancelable(false)
-        }
-//        if (!checkNetworkConnection(this)) {
-//            desktop_text.setText(R.string.tapToRefresh)
-//            linearLayoutDesktop.onClick {
-//                fireUp()
-//            }
-//        }
-
     }
 
     override fun onRestart() {
@@ -173,27 +53,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        ApplicationController.instance?.setConnectivityListener(this);
-        ApplicationController.instance?.activityResumed()
         fireUp()
     }
 
     override fun onPause() {
         super.onPause()
-        ApplicationController.instance?.activityPaused()
+        current_position = bottom_navigation.currentItem
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+        super.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
+        // menuInflater.inflate(R.menu.list_view, menu)
         return true
     }
 
@@ -207,36 +81,146 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_market -> {
-                startActivity(Intent(this, ListingActivity::class.java))
+    fun setupFragment(fragment: Fragment) {
+        linearLayoutDesktop.visibility = View.GONE
+        var fragmentManager = getSupportFragmentManager()
+        var ft = fragmentManager.beginTransaction()
+        ft.replace(R.id.screen_area, fragment)
+        ft.commit()
+    }
+
+    fun shareInvite() {
+        var shareData = getString(R.string.shareData) + " https://agrinext.org"
+        val sendIntent = Intent()
+        sendIntent.action = Intent.ACTION_SEND
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareData)
+        sendIntent.type = "text/plain"
+        startActivity(createChooser(sendIntent, "Share"))
+    }
+
+    fun fireUp() {
+        mAccountManager = AccountManager.get(this)
+        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
+
+        val desktop_text = findViewById<TextView>(R.id.desktop_text)
+        val linearLayoutDesktop = findViewById<LinearLayout>(R.id.linearLayoutDesktop)
+
+        accounts = mAccountManager.getAccountsByType(BuildConfig.APPLICATION_ID)
+        Log.d("Account size", accounts.size.toString())
+        if (accounts.size == 1) {
+
+            setSupportActionBar(toolbar)
+            getSupportActionBar()!!.setDisplayShowTitleEnabled(false);
+            setupBottomNavigation()
+            setupLocationSpinner()
+
+        } else {
+
+            desktop_text.setText(R.string.tapToSignIn)
+            linearLayoutDesktop.onClick {
+                startActivity<AuthenticatorActivity>(
+                        ACCOUNT_TYPE to BuildConfig.APPLICATION_ID
+                )
             }
-            R.id.nav_sellers -> {
-                startActivity(Intent(this, ListingActivity::class.java))
-            }
-            R.id.nav_chats -> {
-                toast("Chats Clicked")
-            }
-            R.id.nav_my_profile -> {
-                startActivity(Intent(this, UserProfile::class.java))
-            }
-            R.id.nav_my_produce -> {
-                startActivity(Intent(this, ProduceActivity::class.java))
-            }
-            R.id.nav_invite -> {
-                share("https://agrinext.org")
-            }
-            R.id.nav_locations -> {
-                startActivity(Intent(this, ListingActivity::class.java))
-            }
-            R.id.nav_items -> {
-                startActivity(Intent(this, ListingActivity::class.java))
+        }
+    }
+
+    fun setupBottomNavigation() {
+        val bottomNavigation = findViewById<View>(R.id.bottom_navigation) as AHBottomNavigation
+
+        if(bottomNavigation.itemsCount == 0) {
+            // Create items
+            val market = AHBottomNavigationItem("Market", R.drawable.ic_group_work, R.color.colorFrappe)
+            val my_produce = AHBottomNavigationItem("My Produce", R.drawable.ic_filter_vintage, R.color.colorFrappe)
+            val sellers = AHBottomNavigationItem("Sellers", R.drawable.ic_group, R.color.colorFrappe)
+            val profile = AHBottomNavigationItem("Profile", R.drawable.ic_group, R.color.colorFrappe)
+
+            // Add items
+            bottomNavigation.addItem(market)
+            bottomNavigation.addItem(my_produce)
+            bottomNavigation.addItem(sellers)
+            bottomNavigation.addItem(profile)
+
+            // Set background color
+            bottomNavigation.setDefaultBackgroundColor(Color.parseColor("#cfd1d3"))
+
+            // Change colors
+            bottomNavigation.setAccentColor(Color.parseColor("#1b5e20"))
+            bottomNavigation.setInactiveColor(Color.parseColor("#747474"))
+
+            // Set listeners
+            bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
+                when (position) {
+                    0 ->
+                        setupFragment(MarketActivity())
+                    1 ->
+                        setupFragment(ProduceActivity())
+                    2 ->
+                        setupFragment(UsersActivity())
+                    3 ->
+                        setupFragment(UserProfile())
+                }
+                true
             }
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
-        return true
+        // Setting the very 1st item as home screen.
+        bottomNavigation.setCurrentItem(current_position);
+        bottomNavigation.setBehaviorTranslationEnabled(false);
+
+    }
+
+    fun setupLocationSpinner() {
+        var locationSpinner = findViewById<Spinner>(R.id.locationSpinner)
+        val bottomNavigation = findViewById<View>(R.id.bottom_navigation) as AHBottomNavigation
+
+        var arrayData = ArrayList<String>()
+        val sharedPref = this.getSharedPreferences(LOCATION, Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+
+        val request = FrappeClient(this).get_all(
+                doctype = "Location"
+        )
+
+        val responseCallback = object : AuthReqCallback {
+            override fun onSuccessResponse(result: String) {
+                val response = JSONObject(result).getJSONArray("data")
+
+                // JSON Array from frappe's listing
+                for (i in 0 until response.length()) {
+                    arrayData.add(response.getJSONObject(i).get("name").toString())
+                }
+
+                var locationAdapter = ArrayAdapter<String>(this@MainActivity, R.layout.spinner_item, arrayData)
+                locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                locationSpinner.adapter = locationAdapter
+
+                if (sharedPref.contains("location")) {
+                    val spinnerPosition = locationAdapter.getPosition(sharedPref.getString("location", ""))
+                    locationSpinner.setSelection(spinnerPosition)
+                } else {
+                    val lang = locationSpinner.getSelectedItem().toString()
+                    editor.putString("location", lang).apply()
+                }
+            }
+
+            override fun onErrorResponse(error: String) {
+                Toast.makeText(this@MainActivity, io.frappe.android.R.string.somethingWrong, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        FrappeClient(this).executeRequest(request, responseCallback)
+
+        locationSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                editor.putString("location", selectedItem).apply()
+                bottomNavigation.setCurrentItem(bottom_navigation.currentItem);
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                // do nothing
+            }
+        }
     }
 }

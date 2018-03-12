@@ -12,14 +12,10 @@
             android:id="@+id/nav_sellers"
             android:icon="@drawable/ic_group"
             android:title="@string/menuSellers" />
-        <item
-            android:id="@+id/nav_chats"
-            android:icon="@drawable/ic_chat"
-            android:title="@string/menuChats" />
-        <item
-            android:id="@+id/nav_my_profile"
-            android:icon="@drawable/ic_perm_identity"
-            android:title="@string/menuMyProfile" />
+        <!--<item-->
+            <!--android:id="@+id/nav_my_profile"-->
+            <!--android:icon="@drawable/ic_perm_identity"-->
+            <!--android:title="@string/menuMyProfile" />-->
         <item
             android:id="@+id/nav_my_produce"
             android:icon="@drawable/ic_filter_vintage"
